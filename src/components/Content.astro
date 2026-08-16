@@ -1,0 +1,46 @@
+---
+interface Props {
+	heading: string;
+	subheading: string;
+	timer?: boolean;
+}
+
+const { heading, subheading, timer = false } = Astro.props;
+---
+
+<section class="text-center font-home flex flex-col items-center">
+	<div
+		class="bubble text-gray-100 text-3xl sm:text-5xl rounded-lg shadow-inner w-64 md:w-3/5 lg:w-2/5 xl:w-1/3 mt-16 lg:mt-20 mb-8 p-5"
+	>
+		<h1 class="text-5xl sm:text-6xl">{heading}</h1>
+		{!timer && <hr class="mt-8 mb-4" />}
+		<h2 class="text-2xl sm:text-4xl">{subheading}</h2>
+		{
+			timer && (
+				<span>
+					<hr class="mt-8 mb-4" />
+					<div id="timer" />
+				</span>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.bubble {
+		background-color: rgba(12, 12, 12, 0.5);
+	}
+</style>
+
+<script>
+	const timerElement = document.getElementById("timer");
+
+	if (timerElement) {
+		const updateTimer = () => {
+			timerElement.textContent = Math.floor(Date.now()).toString();
+		};
+
+		updateTimer();
+		setInterval(updateTimer, 100);
+	}
+</script>

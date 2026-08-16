@@ -1,0 +1,305 @@
+# Translated from .forgejo/workflows/ci.yml for the move to GitHub-canonical. GitHub's
+# hosted runners bind-mount a Node.js runtime into every container job automatically, so
+# the manual `apk add nodejs` steps Forgejo needed before checkout are gone - they were
+# working around Forgejo's runner not doing that. actions/checkout still falls back to a
+# tarball download when git isn't present, same as on Forgejo, so only jobs that need real
+# history (fetch-depth: 0) or run `git`/`node` themselves still install anything.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  # Replaces GitLab's Security/Secret-Detection template by way of Forgejo. gitleaks is
+  # what the pre-commit hook already runs, so this is the same check at both ends.
+  secrets:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+      options: --entrypoint ""
+    steps:
+      - run: apk add --no-cache git ca-certificates
+      # fetch-depth: 0, and it fails quietly without it - checkout downloads a tarball,
+      # there is no history to walk, and the job passes having scanned nothing.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - run: gitleaks git --redact --no-banner
+
+  # Biome comes from the lockfile, not a container, so this is the same binary the
+  # pre-commit hook runs.
+  biome:
+    runs-on: ubuntu-latest
+    container:
+      image: oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: bun install --frozen-lockfile
+      - run: bunx biome ci --colors=off
+
+  # The other half of `bun run lint`, which is `biome check && astro check`. Its own job
+  # rather than a second command in `biome`: a failing type check and a failing lint rule
+  # should be two names in the pipeline, not one.
+  astro:
+    runs-on: ubuntu-latest
+    container:
+      image: oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: bun install --frozen-lockfile
+      - run: bunx astro check
+
+  dockerfile:
+    runs-on: ubuntu-latest
+    container:
+      image: hadolint/hadolint:v2.14.0-alpine@sha256:7aba693c1442eb31c0b015c129697cb3b6cb7da589d85c7562f9deb435a6657c
+      options: --entrypoint ""
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Rules and the failure threshold come from .hadolint.yaml - the same config the
+      # pre-commit hook uses.
+      - run: hadolint Dockerfile
+
+  # Layout for the file types Biome does not do: Markdown and YAML, and nothing else.
+  # Check mode, never --write - a job that rewrites files leaves the pushed commit and the
+  # reviewed diff disagreeing about what was formatted.
+  prettier:
+    runs-on: ubuntu-latest
+    container:
+      image: oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: bun install --frozen-lockfile
+      - run: bun run format:check
+
+  markdown:
+    runs-on: ubuntu-latest
+    container:
+      image: oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: bun install --frozen-lockfile
+      - run: bunx markdownlint-cli2
+
+  # Prose mechanics - grammar, spelling, punctuation, the phonetic article - over
+  # LanguageTool's rule database. Fails the pipeline, unlike the style tier, because
+  # mechanics have a right answer. CI only, deliberately: a ~320 MB tarball shipping its
+  # own JDK is more than a commit should wait on - the editor runs the same engine over
+  # LSP. Debian rather than alpine: the bundled JDK is glibc-linked and will not start on
+  # musl.
+  grammar:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:trixie-slim@sha256:3a39a0592364683e6bab97937b72cad5a8fa6dcbbee90edb3bb48c7f8e94f258
+    env:
+      LTEX_VERSION: "18.7.0"
+    steps:
+      - run: apt-get update && apt-get install --no-install-recommends -y ca-certificates curl
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: curl -fsSL -o /tmp/ltex.tar.gz "https://github.com/ltex-plus/ltex-ls-plus/releases/download/${LTEX_VERSION}/ltex-ls-plus-${LTEX_VERSION}-linux-x64.tar.gz"
+      - run: tar -xzf /tmp/ltex.tar.gz -C /opt
+      # ltex-cli-plus exits 3 when it finds something, not 1, so a job testing for a
+      # specific code passes a failing document. Letting any non-zero fail is the test
+      # that works.
+      - run: |
+          find . -name '*.md' \
+            -not -path './node_modules/*' \
+            -not -path './_site/*' \
+            -not -path './styles/Google/*' \
+            -not -path './styles/proselint/*' \
+            -not -name 'CHANGELOG.md' \
+            -print0 |
+            xargs -0 --no-run-if-empty \
+              "/opt/ltex-ls-plus-${LTEX_VERSION}/bin/ltex-cli-plus" \
+              --client-configuration=.ltex.json
+
+  # Prose style: house voice, weasel words, corporate speak, and the cliches proselint
+  # knows. Errors fail and warnings do not: MinAlertLevel in .vale.ini prints the advice,
+  # and only Vale.Terms and Vale.Spelling take the job down.
+  prose:
+    runs-on: ubuntu-latest
+    container:
+      image: jdkato/vale:v3.17.1@sha256:7dba3c9104ba366f172d119022c4ec53a005f7d14dc1b80e285421a3f0b71657
+      options: --entrypoint ""
+    steps:
+      - run: apk add --no-cache --upgrade ca-certificates
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Fetches Google and proselint into styles/, which is why they are gitignored and
+      # why this runs first. styles/House and the vocabulary beside it are committed.
+      - run: vale sync
+      - run: vale README.md CONTRIBUTING.md
+
+  # Mirrors lefthook's commit-msg hook, which is trivially skipped with --no-verify.
+  commits:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    container:
+      image: oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+    steps:
+      - run: apk add --no-cache ca-certificates git
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - run: bun install --frozen-lockfile
+      - run: bunx commitlint --from "${{ github.event.pull_request.base.sha }}" --to HEAD --verbose
+
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+
+  # Tests the served artifact rather than the generator. No container, unlike Forgejo's
+  # docker:*-cli image talking to the runner's own dind daemon over a discovered gateway
+  # IP - GitHub's hosted ubuntu-latest runners have Docker Engine running natively on the
+  # host, so the default socket is already the right one.
+  smoke:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get update && sudo apt-get install --no-install-recommends -y bats
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: bats test/
+
+  # Audits the built HTML, not the running container. best-practices, accessibility and
+  # performance are all hard gates at 0.9.
+  lighthouse:
+    needs: [build]
+    runs-on: ubuntu-latest
+    container:
+      image: oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+    env:
+      CHROME_PATH: /usr/bin/chromium
+    steps:
+      - run: apk add --no-cache chromium
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: bunx lhci autorun
+      # Best-effort, and deliberately so. A report that failed to upload must not take a
+      # quality gate down with it - the assertions in lighthouserc.json are the gate and
+      # they have already run by this point.
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        continue-on-error: true
+        with:
+          name: lighthouse
+          path: .lighthouseci/
+          retention-days: 7
+
+  # Cuts the release: works out the version from the commits, writes CHANGELOG.md, commits
+  # it, tags it, and puts the notes on the Releases page. GitHub's automatic per-job token
+  # authenticates and pushes on its own once the job has contents: write - unlike Forgejo,
+  # there's no PAT to provision and no remote URL to rewrite.
+  release:
+    needs:
+      - secrets
+      - biome
+      - astro
+      - dockerfile
+      - prettier
+      - markdown
+      - grammar
+      - prose
+      - build
+      - smoke
+      - lighthouse
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    container:
+      image: oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      # git because semantic-release drives it, npm because @semantic-release/npm shells
+      # out to it, nodejs because semantic-release runs under node here rather than bun.
+      - run: apk add --no-cache ca-certificates git nodejs npm
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - run: bun install --frozen-lockfile
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # bun install above ran lefthook's prepare script, so it's live in this checkout
+          # - and @semantic-release/git pushes the changelog commit with a plain
+          # `git push`, which fires the pre-push hook from inside this job. That hook runs
+          # `docker compose run --rm hadolint ...`; this image has no docker, so the hook
+          # dies and takes the push down with it.
+          LEFTHOOK: "0"
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: node node_modules/semantic-release/bin/semantic-release.js
+
+  # Publishes to GHCR rather than a self-hosted registry, so there's no token to provision
+  # either - the automatic per-job token authenticates and pushes on its own once the job
+  # has packages: write.
+  image:
+    needs: [build, smoke]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+      - run: bun install --frozen-lockfile
+      # Real analytics values only ever exist here, as repository variables, at the build
+      # that actually ships - every other build in this pipeline runs with them unset.
+      - name: Build
+        env:
+          PUBLIC_MATOMO_URL: ${{ vars.PUBLIC_MATOMO_URL }}
+          PUBLIC_MATOMO_SITE_ID: ${{ vars.PUBLIC_MATOMO_SITE_ID }}
+          PUBLIC_UMAMI_SCRIPT_URL: ${{ vars.PUBLIC_UMAMI_SCRIPT_URL }}
+          PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.PUBLIC_UMAMI_WEBSITE_ID }}
+        run: bun run build
+
+      - run: docker build --pull -t "ghcr.io/${{ github.repository }}:ci" .
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push
+        run: |
+          set -eu
+          image="ghcr.io/${{ github.repository }}"
+          # A ref can carry a slash; a registry tag component cannot.
+          slug=$(printf '%s' "${{ github.ref_name }}" | tr '/' '-')
+          docker tag "${image}:ci" "${image}:${slug}"
+          docker push "${image}:${slug}"
+
+          # The default branch also moves `latest`, which is the tag vps-docker pulls.
+          if [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            docker tag "${image}:ci" "${image}:latest"
+            docker push "${image}:latest"
+          fi
+
+          # placeholder/compose.yaml in vps-docker pins by tag *and* digest, so a deploy
+          # needs this line. Printing it here saves pulling the image to find out what was
+          # just pushed.
+          echo "Pinned form for vps-docker:"
+          docker inspect --format '{{index .RepoDigests 0}}' "${image}:${slug}"

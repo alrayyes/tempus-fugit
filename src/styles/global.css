@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/* Tailwind v4 takes its configuration from CSS, not tailwind.config.js. The old
+   JS config declared this font and was silently ignored, so `font-home` had been
+   generating nothing at all. */
+@theme {
+	--font-home: "Roboto", sans-serif;
+}
+
+/* Served from public/, so these resolve at the document root rather than
+   relative to this file. */
+@font-face {
+	font-family: "Roboto";
+	src: url("/fonts/Roboto-Regular-webfont.woff") format("woff");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Roboto";
+	src: url("/fonts/Roboto-Regular-webfont.woff") format("woff");
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Roboto";
+	src: url("/fonts/Roboto-Regular-webfont.woff") format("woff");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Roboto";
+	src: url("/fonts/Roboto-Regular-webfont.woff") format("woff");
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}

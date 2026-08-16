@@ -1,0 +1,36 @@
+globs:
+  - "**/*.md"
+
+# CHANGELOG.md is generated from commit messages - linting it would only ever fail
+# on someone else's output. _site is build output, node_modules for the obvious reason.
+ignores:
+  - CHANGELOG.md
+  - _site
+  - node_modules
+  # Vale's style packages, downloaded by `vale sync`. Vendored text belongs to
+  # nobody. Named individually rather than ignoring styles/, which would take
+  # styles/House and the vocabulary with them.
+  - styles/Google
+  - styles/proselint
+
+config:
+  # Prettier decides layout here, so the rules that would fight it come off.
+  # markdownlint ships and maintains that list beside the rules themselves -
+  # heading style, blanks around headings and lists, fence style, hard tabs,
+  # list indent and marker spacing, 23 of them. Don't hand-roll it.
+  extends: "markdownlint/style/prettier"
+  default: true
+  # That style drops MD013 on the assumption Prettier reflows prose, which it
+  # only does on proseWrap "always" or "never". We're on "preserve", so Prettier
+  # never moves a line break and the check is still ours.
+  #
+  # It has to come back under the alias. `extends` merges on the literal key, so
+  # an MD013: block would sit beside the inherited `line-length: false` and lose,
+  # leaving a config that reads as though the rule is on while it is off.
+  #
+  # Prose here wraps at 100, not the 80 default. Tables and fenced code can't be
+  # wrapped without mangling them, so they're exempt rather than reformatted.
+  line-length:
+    line_length: 100
+    code_blocks: false
+    tables: false

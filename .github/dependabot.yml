@@ -1,0 +1,13 @@
+# Renovate on Forgejo, Dependabot on GitHub - Renovate only runs where it can push, and
+# GitHub-primary is invisible to it no matter how it's mirrored.
+version: 2
+updates:
+  - package-ecosystem: "bun"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

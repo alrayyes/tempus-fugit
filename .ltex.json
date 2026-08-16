@@ -1,0 +1,56 @@
+{
+	"ltex": {
+		"language": "en-GB",
+		"dictionary": {
+			"en-GB": [
+				"Astro",
+				"Biome",
+				"Caddy",
+				"Chromium",
+				"Forgejo",
+				"Fugit",
+				"Gitea",
+				"GitLab",
+				"JDK",
+				"LSP",
+				"LTeX",
+				"LanguageTool",
+				"Lighthouse",
+				"Matomo",
+				"Prettier",
+				"Renovate",
+				"Tailwind",
+				"Tempus",
+				"Traefik",
+				"Umami",
+				"bats",
+				"bun",
+				"commitlint",
+				"favicon",
+				"favicons",
+				"frontmatter",
+				"glibc",
+				"glibc-linked",
+				"greps",
+				"hadolint",
+				"lefthook",
+				"lhci",
+				"markdownlint",
+				"minifier",
+				"musl",
+				"npm",
+				"proselint",
+				"semantic-release",
+				"vps-docker"
+			]
+		},
+		"disabledRules": {
+			"en-GB": [
+				"PASSIVE_VOICE",
+				"OXFORD_SPELLING_Z_NOT_S",
+				"UPPERCASE_SENTENCE_START",
+				"PREPOSITION_VERB"
+			]
+		}
+	}
+}

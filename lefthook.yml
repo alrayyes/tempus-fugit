@@ -1,0 +1,51 @@
+skip_lfs: true
+
+commit-msg:
+  commands:
+    "lint commit message":
+      run: bunx commitlint --edit {1}
+
+pre-push:
+  parallel: true
+  jobs:
+    - run: bun run lint
+    - run: bun run format:check
+    - run: bun run lint:md
+    # Vale only. LTeX is the other prose tier and it stays in CI: a 320 MB
+    # download that ships its own JDK is more than a push should wait on.
+    - run: bun run lint:prose
+    - run: docker compose run --rm -T hadolint hadolint Dockerfile
+    # Sequential: the smoke test builds the image from _site, so the site has to
+    # exist first. This replaces the bare `docker build .` — the test builds the
+    # same image and then checks it actually serves.
+    - name: smoke
+      run: bun run build && bun run test
+
+pre-commit:
+  parallel: true
+  jobs:
+    - run: bun run lint:fix .
+      glob: "*"
+      stage_fixed: true
+    # Sequential, and in this order. Prettier decides the layout and markdownlint
+    # then judges what Prettier produced; the other way round has markdownlint
+    # fixing something Prettier is about to overwrite.
+    - name: prose
+      group:
+        jobs:
+          - run: bunx prettier --write {staged_files}
+            glob: "*.{md,yml,yaml}"
+            stage_fixed: true
+          - run: bun run lint:md:fix
+            glob: "*.md"
+            stage_fixed: true
+          # Last in the group: Vale reads what Prettier and markdownlint left,
+          # and it never writes. Warnings print and pass; only Vale.Terms and
+          # Vale.Spelling stop a commit.
+          - run: bun run lint:prose
+            glob: "*.md"
+    - run: bun run build
+    - run: docker compose run --rm -T hadolint hadolint Dockerfile
+      glob: "Dockerfile"
+    - run: docker build .
+      glob: "Dockerfile"

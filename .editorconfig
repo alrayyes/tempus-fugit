@@ -1,0 +1,17 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+# Biome formats these with tabs. Without this section the editor and the
+# formatter disagree and every save fights the pre-commit hook.
+[*.{js,mjs,cjs,ts,mts,cts,json,jsonc}]
+indent_style = tab
+
+[*.bats]
+indent_style = tab

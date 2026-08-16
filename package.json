@@ -1,0 +1,61 @@
+{
+	"name": "tempus-fugit",
+	"private": true,
+	"description": "Outpost landing page",
+	"version": "3.2.206",
+	"author": "alrayyes",
+	"devDependencies": {
+		"@astrojs/check": "0.9.10",
+		"@biomejs/biome": "2.5.7",
+		"@commitlint/cli": "20.5.3",
+		"@commitlint/config-conventional": "20.5.3",
+		"@lhci/cli": "0.15.1",
+		"@semantic-release/changelog": "7.0.0",
+		"@semantic-release/commit-analyzer": "13.0.1",
+		"@semantic-release/git": "11.0.1",
+		"@semantic-release/github": "12.0.9",
+		"@semantic-release/npm": "13.1.5",
+		"@semantic-release/release-notes-generator": "14.1.1",
+		"@tailwindcss/vite": "4.3.3",
+		"astro": "7.2.0",
+		"bats": "1.13.0",
+		"lefthook": "2.1.10",
+		"markdownlint-cli2": "0.23.2",
+		"prettier": "3.9.6",
+		"semantic-release": "25.0.9",
+		"tailwindcss": "4.3.3",
+		"typescript": "5.9.3"
+	},
+	"keywords": [
+		"astro"
+	],
+	"scripts": {
+		"start": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"lint": "biome check && astro check",
+		"lint:fix": "biome check --write",
+		"lint:md": "markdownlint-cli2",
+		"lint:md:fix": "markdownlint-cli2 --fix",
+		"lint:prose": "vale README.md CONTRIBUTING.md",
+		"format": "prettier --write '**/*.{md,yml,yaml}'",
+		"format:check": "prettier --check '**/*.{md,yml,yaml}'",
+		"test": "bats test/",
+		"test:lighthouse": "lhci autorun",
+		"release": "semantic-release",
+		"prepare": "test -n \"$CI\" || lefthook install"
+	},
+	"repository": "https://github.com/alrayyes/tempus-fugit",
+	"bugs": {
+		"url": "https://github.com/alrayyes/tempus-fugit/issues"
+	},
+	"license": "GPL-3.0-or-later",
+	"packageManager": "bun@1.3.14",
+	"trustedDependencies": [
+		"@biomejs/biome",
+		"@tailwindcss/oxide",
+		"esbuild",
+		"lefthook",
+		"sharp"
+	]
+}

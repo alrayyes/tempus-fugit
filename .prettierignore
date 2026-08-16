@@ -1,0 +1,15 @@
+# Prettier is here to fill Biome's gaps, and the gaps are Markdown and YAML.
+# Everything else Prettier can parse, Biome already owns - one tool with an
+# opinion per file type, or the two of them fight over the same characters.
+# The invocation only ever passes it *.md and *.yml/*.yaml globs; this file is
+# the belt to that pair of braces, and the place to put anything those globs
+# would otherwise sweep up.
+
+node_modules
+_site
+.astro
+.lighthouseci
+
+# Generated from commit messages. Reformatting someone else's output produces a
+# diff nobody wrote and nobody can review.
+CHANGELOG.md

@@ -1,0 +1,40 @@
+---
+---
+
+<main class="bg-center bg-no-repeat bg-cover relative -z-100 background-image">
+	<section class="min-h-screen">
+		<slot />
+	</section>
+</main>
+
+<style>
+	.background-image {
+		background-image: url("/images/bg.jpg");
+
+		-webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+		mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+		/* Rendering hint for the mask above. */
+		will-change: mask-image;
+	}
+
+	/* The webp is 70 KB lighter than the JPEG for the same photograph, and this is
+	the guard that hands the JPEG to anything older than Safari 17. It has to be
+	@supports rather than the usual two declarations of the same property: the
+	minifier drops the first of those as dead weight, and the fallback goes with
+	it — the built CSS then carries image-set alone and an older browser gets a
+	hero with no background at all. */
+	@supports (background-image: image-set(url("/images/bg.webp") type("image/webp"))) {
+		.background-image {
+			background-image: image-set(
+				url("/images/bg.webp") type("image/webp"),
+				url("/images/bg.jpg") type("image/jpeg")
+			);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.background-image {
+			transition: none;
+		}
+	}
+</style>

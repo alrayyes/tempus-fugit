@@ -1,0 +1,121 @@
+---
+import HeroBanner from "../components/HeroBanner.astro";
+import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import "../styles/global.css";
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = SITE_DESCRIPTION } = Astro.props;
+const pageTitle = `${title} | ${SITE_TITLE}`;
+
+// Analytics are opt-in via env vars rather than hardcoded, so a public clone of this
+// repo ships with zero tracking by default. The real production values are supplied
+// only as GitHub Actions repository variables at build time, never committed.
+const matomoUrl = import.meta.env.PUBLIC_MATOMO_URL;
+const matomoSiteId = import.meta.env.PUBLIC_MATOMO_SITE_ID;
+const umamiScriptUrl = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL;
+const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
+const matomoEnabled = Boolean(matomoUrl && matomoSiteId);
+const umamiEnabled = Boolean(umamiScriptUrl && umamiWebsiteId);
+// The image tracker's host and site ID come from the same two pairs the scripted
+// trackers above use - see CONTRIBUTING.md's note on why they don't match each other.
+// This preserves that exact behaviour rather than picking a side.
+const matomoNoscriptSrc =
+	matomoEnabled && umamiEnabled
+		? new URL(`/matomo.php?idsite=${matomoSiteId}&rec=1`, umamiScriptUrl).href
+		: undefined;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+		<meta name="og:site_name" content={SITE_TITLE} />
+		<meta name="og:title" content={title} />
+		<meta name="og:description" content={description} />
+		<meta name="og:type" content="website" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:creator" content={SITE_AUTHOR} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+
+		<!-- A real vector again as of #22: two clock hands, not the 3.2 MB photograph
+		that #18 removed (that one was a raster base64'd into an <image> tag, so
+		there was nothing to fall back to). Browsers that support SVG favicons use
+		this; the rest fall back to the PNG/ICO set below. -->
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="manifest" href="/site.webmanifest" />
+
+		<!-- Matomo -->
+		{
+			matomoEnabled && (
+				<script is:inline define:vars={{ matomoUrl, matomoSiteId }}>
+					var _paq = (window._paq = window._paq || []);
+					/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+					_paq.push(["trackPageView"]);
+					_paq.push(["enableLinkTracking"]);
+					(function () {
+						var u = matomoUrl;
+						_paq.push(["setTrackerUrl", u + "matomo.php"]);
+						_paq.push(["setSiteId", matomoSiteId]);
+						var d = document,
+							g = d.createElement("script"),
+							s = d.getElementsByTagName("script")[0];
+						g.async = true;
+						g.src = u + "matomo.js";
+						s.parentNode.insertBefore(g, s);
+					})();
+				</script>
+			)
+		}
+		<!-- End Matomo Code -->
+
+		{
+			umamiEnabled && (
+				<script
+					is:inline
+					async
+					defer
+					src={umamiScriptUrl}
+					data-website-id={umamiWebsiteId}
+					data-auto-track="true"
+					data-do-not-track="true"
+					data-cache="false"
+					data-domains=""
+				/>
+			)
+		}
+	</head>
+	<body>
+		<HeroBanner>
+			<section class="min-h-screen">
+				<slot />
+			</section>
+		</HeroBanner>
+
+		<!-- Matomo Image Tracker -->
+		{
+			matomoNoscriptSrc && (
+				<noscript>
+					<img
+						referrerpolicy="no-referrer-when-downgrade"
+						src={matomoNoscriptSrc}
+						style="border:0"
+						alt=""
+					/>
+				</noscript>
+			)
+		}
+		<!-- End Matomo -->
+	</body>
+</html>

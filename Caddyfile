@@ -1,0 +1,27 @@
+:8080 {
+	root * /usr/share/caddy
+
+	# Nothing was compressed under nginx - the old config had no gzip block at
+	# all, so the HTML, CSS and JS went over the wire raw.
+	encode zstd gzip
+
+	file_server
+
+	handle_errors 404 {
+		rewrite * /404.html
+		file_server
+	}
+
+	# Content-addressed or effectively frozen. Astro fingerprints everything under
+	# /_astro, and the font and background image have not changed in years and are
+	# the two biggest things a visitor pulls.
+	header /_astro/* Cache-Control "public, max-age=31536000, immutable"
+	header /images/* Cache-Control "public, max-age=31536000, immutable"
+	header /fonts/* Cache-Control "public, max-age=31536000, immutable"
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+}

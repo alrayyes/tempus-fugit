@@ -1,0 +1,9 @@
+---
+# Stricter than the default (which only fails on errors) so style-level
+# findings — an unpinned base image, a redundant layer — fail CI rather than
+# scrolling past in the log.
+failure-threshold: style
+
+trustedRegistries:
+  - docker.io
+  - registry.higherlearning.eu

@@ -1,0 +1,17 @@
+node_modules
+
+# dotenv environment variable files
+.env*
+!.env.example
+
+# astro
+.astro
+_site
+
+# lighthouse ci reports
+.lighthouseci
+
+# vale downloads its style packages with `vale sync`; styles/House and the
+# vocabulary beside it are ours and stay committed.
+styles/Google
+styles/proselint
