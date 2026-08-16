@@ -146,6 +146,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+      # commitlint shells out to git directly (unlike gitleaks, which is unaffected), and
+      # hits the same ownership check the release job does - see the note there.
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: bun install --frozen-lockfile
       - run: bunx commitlint --from "${{ github.event.pull_request.base.sha }}" --to HEAD --verbose
 
