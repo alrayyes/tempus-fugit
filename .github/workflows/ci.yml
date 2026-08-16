@@ -233,6 +233,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+      # The container runs as a different UID than whatever owns the mounted workspace, so
+      # git's ownership check refuses it - not with the usual "dubious ownership" message,
+      # but as semantic-release's own wrapped "Not running from a git repository", which is
+      # what actually reads as a real error from the tool rather than a git config gap.
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: bun install --frozen-lockfile
       - name: Release
         env:
