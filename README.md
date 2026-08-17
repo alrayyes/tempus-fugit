@@ -1,15 +1,16 @@
 # Tempus Fugit
 
 [![pipeline status][pipeline-badge]][pipelines]
-[![production][environment-badge]][production]
 [![licence][licence-badge]](#licence)
 
-This is the landing page for `outpost.higherlearning.eu` — the page you get when you
-hit the VPS without asking for any particular service. It is two pages: a hero with a
-running millisecond counter, and a 404.
+[![A hero banner over a pocket watch photograph, with a running millisecond counter](.github/screenshot.jpg)](https://tempus-fugit.ryankes.eu/)
+
+This is a landing page for a personal VPS — the page you get when you hit it
+without asking for any particular service. It is two pages: a hero with a
+running millisecond counter, and a 404. **[Live demo](https://tempus-fugit.ryankes.eu/)**.
 
 It is built with [Astro](https://astro.build/), styled with Tailwind, and shipped as a
-Caddy image that CI builds and `vps-docker` deploys.
+Caddy image that CI builds and a private deploy repo picks up.
 
 ## Running it
 
@@ -39,9 +40,8 @@ which writes `_site/`.
 
 You do not deploy this by hand. The image is `ghcr.io/alrayyes/tempus-fugit`. Pushing to
 `master` or a tag builds it and publishes it: every ref gets a tag named after itself,
-with any slashes turned into dashes, and `master` moves `:latest` on top of that. The VPS
-picks it up from [vps-docker](https://git.higherlearning.eu/homelab/vps-docker), where
-`placeholder/compose.yaml` pins the image by tag and digest.
+with any slashes turned into dashes, and `master` moves `:latest` on top of that. A
+private deploy repo picks it up from there and pins the image by tag and digest.
 
 Publishing needs no repository secret to provision. GHCR authenticates with the
 automatic per-run `GITHUB_TOKEN`, scoped to `packages: write` on the `image` job — unlike
@@ -99,11 +99,9 @@ Testing, linting, hooks and the rest of the tool-by-tool detail live in
 surrounding tooling — the CI pipeline, the release setup, the smoke tests against a real served
 artifact — is the part worth reusing.
 
-`git.higherlearning.eu/alrayyes/tempus-fugit` is a read-only mirror of this repository. GitHub
-is canonical: issues, pull requests, and releases all happen here.
+GitHub is canonical: issues, pull requests, and releases all happen here. A
+read-only mirror exists elsewhere, but it's private and nothing points at it.
 
 [pipeline-badge]: https://github.com/alrayyes/tempus-fugit/actions/workflows/ci.yml/badge.svg
 [pipelines]: https://github.com/alrayyes/tempus-fugit/actions
-[environment-badge]: https://img.shields.io/badge/production-outpost.higherlearning.eu-brightgreen
-[production]: https://outpost.higherlearning.eu
 [licence-badge]: https://img.shields.io/badge/licence-GPL--3.0--or--later-blue

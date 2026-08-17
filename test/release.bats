@@ -88,3 +88,24 @@ REPO_ROOT="${BATS_TEST_DIRNAME}/.."
 	run grep -F '"@semantic-release/github"' "$REPO_ROOT/.releaserc.json"
 	[ "$status" -eq 0 ]
 }
+
+@test "the screenshot is committed and travels with a release" {
+	[ -f "$REPO_ROOT/.github/screenshot.jpg" ]
+	run grep -F '.github/screenshot.jpg' "$REPO_ROOT/.releaserc.json"
+	[ "$status" -eq 0 ]
+}
+
+@test "the release job regenerates the screenshot before it runs semantic-release" {
+	# Position matters: @semantic-release/git only commits what has already
+	# changed on disk by the time its prepare step runs, so the screenshot has
+	# to be retaken before the Release step, not after.
+	local job screenshot_line release_line
+	job="$(awk '/^  release:/ {found=1} found && /^  [a-z]+:/ && !/^  release:/ {exit} found' \
+		"$REPO_ROOT/.github/workflows/ci.yml")"
+	screenshot_line="$(grep -n 'Screenshot the built site' <<<"$job" | cut -d: -f1)"
+	release_line="$(grep -n 'name: Release$' <<<"$job" | cut -d: -f1)"
+
+	[ -n "$screenshot_line" ]
+	[ -n "$release_line" ]
+	[ "$screenshot_line" -lt "$release_line" ]
+}
