@@ -1,0 +1,22 @@
+# Dependabot has no built-in auto-merge, unlike Renovate's automerge: true on the Forgejo
+# side. This fills the gap without merging anything itself - it asks GitHub to auto-merge
+# once the checks this same PR already waits for (the ci workflow, on the same
+# pull_request event) all pass, the same way any other PR here would be merged by hand.
+name: dependabot-auto-merge
+
+on: pull_request
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  auto-merge:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --auto --squash "$PR_URL"
