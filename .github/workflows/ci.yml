@@ -231,8 +231,9 @@ jobs:
       pull-requests: write
     steps:
       # git because semantic-release drives it, npm because @semantic-release/npm shells
-      # out to it, nodejs because semantic-release runs under node here rather than bun.
-      - run: apk add --no-cache ca-certificates git nodejs npm
+      # out to it, nodejs because semantic-release runs under node here rather than bun,
+      # chromium and curl for the screenshot step below.
+      - run: apk add --no-cache ca-certificates git nodejs npm chromium curl
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
@@ -242,6 +243,24 @@ jobs:
       # what actually reads as a real error from the tool rather than a git config gap.
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: bun install --frozen-lockfile
+      - run: bun run build
+      # Regenerated on every push to master, not only when a release actually happens -
+      # semantic-release itself decides that, and by the time it has, deciding whether to
+      # take a screenshot first would mean asking it twice. @semantic-release/git only
+      # commits this if it actually changed, so a run with no visual change stages nothing.
+      - name: Screenshot the built site
+        run: |
+          set -eu
+          bun run preview --port 4321 &
+          PREVIEW_PID=$!
+          for _ in $(seq 1 30); do
+            curl -fsS http://localhost:4321/ >/dev/null 2>&1 && break
+            sleep 1
+          done
+          chromium --headless --disable-gpu --no-sandbox --hide-scrollbars \
+            --window-size=1280,800 --screenshot=.github/screenshot.jpg \
+            http://localhost:4321/
+          kill "$PREVIEW_PID"
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
