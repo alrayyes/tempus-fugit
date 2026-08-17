@@ -2,7 +2,9 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-	site: "https://outpost.higherlearning.eu",
+	// No `site` here: nothing in this project reads Astro.site or generates
+	// absolute URLs from it (no sitemap, no RSS), so there's nothing to set it
+	// to that wouldn't just be a personal domain sitting unused in public source.
 	// Kept as _site rather than Astro's dist/ so the Dockerfile, .gitignore and
 	// the CI artifact path do not all have to move at the same time as the
 	// generator.
