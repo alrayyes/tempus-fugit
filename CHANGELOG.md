@@ -1,3 +1,11 @@
+# 1.0.0 (2026-08-16)
+
+
+### Bug Fixes
+
+* **ci:** mark the workspace safe before the release job runs git ([4f866af](https://github.com/alrayyes/tempus-fugit/commit/4f866af3269758e5721ced5afcbba8bdb517b591))
+* **ci:** the commits job needs the same safe.directory fix ([0b0960a](https://github.com/alrayyes/tempus-fugit/commit/0b0960abcf9322e5d9445f824fcd73f0280db3fd))
+
 # Changelog
 
 ## [3.2.206](https://gitlab.higherlearning.eu/personal/websites/tempus-fugit/compare/v3.2.205...v3.2.206) (2025-11-13)
