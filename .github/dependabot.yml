@@ -6,6 +6,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # TypeScript 7 dropped the programmatic API @astrojs/check needs - astro check
+      # fails outright, not a lint nit. Tracked upstream:
+      # https://github.com/withastro/roadmap/discussions/1321
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
