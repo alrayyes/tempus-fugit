@@ -50,12 +50,10 @@ a self-hosted registry, there's no personal-access token to mint or rotate.
 The job prints the pushed digest at the end, which is what `placeholder/compose.yaml`
 pins alongside the tag. Nothing on the VPS moves until that file does.
 
-Two of the trackers this site ships need real values to do anything in production:
-`PUBLIC_MATOMO_URL`, `PUBLIC_MATOMO_SITE_ID`, `PUBLIC_UMAMI_SCRIPT_URL` and
-`PUBLIC_UMAMI_WEBSITE_ID`, set as repository variables (Settings → Secrets and
-variables → Actions → Variables) and read only by the `image` job's build step. Every
-other build in this pipeline runs with them unset, so a fork or a local checkout ships
-with zero tracking by default — see [`.env.example`](.env.example).
+The page supports analytics — [Matomo](https://matomo.org/) and
+[Umami](https://umami.is/) — off by default and configured through repository
+variables at build time. A fork or a local checkout builds with them unset and
+ships with no tracking; see [`.env.example`](.env.example).
 
 ## Releasing
 
@@ -79,14 +77,6 @@ credential helper.
 it is the line to read before copying this config anywhere: eight of the other
 repositories tag bare, and a config carried across without changing it starts them again
 at 1.0.0. There is a test on it in `test/release.bats`.
-
-## Things that will catch you out
-
-**Caddy listens on `:8080`, not `:80`.** It runs as `nobody`, and an unprivileged
-process cannot bind a port below 1024. That means Traefik cannot guess the port from
-the container any more, so `placeholder/compose.yaml` in `vps-docker` carries a
-`traefik.http.services.placeholder.loadbalancer.server.port=8080` label. If you ever
-see Traefik 502 after a deploy, that label is the first thing to check.
 
 ## Contributing
 
