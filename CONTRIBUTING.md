@@ -62,6 +62,25 @@ You need Chromium locally (`CHROME_PATH` if it is somewhere unusual). The `--no-
 flag in `lighthouserc.json` is there because Chrome's sandbox needs privileges no CI
 container should have.
 
+There is a coverage report too:
+
+```shell
+bun run test:coverage
+```
+
+`scripts/coverage.sh` runs `test/release.bats` under [kcov](https://github.com/SimonKagstrom/kcov)
+and writes `coverage/cobertura.xml` for Codecov. It is the closest thing this repo has to
+real source now that `@semantic-release/github` replaced the old
+`scripts/forgejo-release.js` publish step — real bash, with a loop and a case statement,
+not config or markup. `smoke.bats` stays out of it: it needs a docker socket to build and
+run the served container, and the `kcov` image carries no docker binary to reach one from
+inside itself.
+
+`bats-core` turns a test file into a numbered copy under `TMPDIR` before running it,
+which is the file `kcov` actually traces — the script pins `TMPDIR` under the workspace
+and rewrites the numbered name back to `test/release.bats` afterwards, or Codecov reports
+coverage against a temp file nobody can look up.
+
 ## Things that will catch you out
 
 **`robots.txt` is `Disallow: /`.** That is deliberate. Do not "fix" it.

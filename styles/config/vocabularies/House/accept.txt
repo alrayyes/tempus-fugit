@@ -3,6 +3,7 @@ Biome
 Caddy
 Chromium
 Cloudflare
+Codecov
 Dockerfile
 Forgejo
 Fugit
@@ -24,6 +25,7 @@ Vale
 APIs
 [Bb]ats
 bun
+cobertura
 commitlint
 config
 dev
@@ -35,6 +37,7 @@ glibc
 greps
 hadolint
 hardcoded
+kcov
 lefthook
 lhci
 markdownlint
