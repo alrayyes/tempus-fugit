@@ -70,7 +70,7 @@ bun run test:coverage
 
 `scripts/coverage.sh` runs `test/release.bats` under [kcov](https://github.com/SimonKagstrom/kcov)
 and writes `coverage/cobertura.xml` for Codecov. It is the closest thing this repo has to
-actual source now that `@semantic-release/github` replaced the old
+source code now that `@semantic-release/github` replaced the old
 `scripts/forgejo-release.js` publish step — real bash, with a loop and a case statement,
 not config or markup. `smoke.bats` stays out of it: it needs a docker socket to build and
 run the served container, and the `kcov` image carries no docker binary to reach one from
