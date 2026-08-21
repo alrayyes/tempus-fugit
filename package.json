@@ -41,6 +41,7 @@
 		"format": "prettier --write '**/*.{md,yml,yaml}'",
 		"format:check": "prettier --check '**/*.{md,yml,yaml}'",
 		"test": "bats test/",
+		"test:coverage": "scripts/coverage.sh",
 		"test:lighthouse": "lhci autorun",
 		"release": "semantic-release",
 		"prepare": "test -n \"$CI\" || lefthook install"

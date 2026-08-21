@@ -1,6 +1,7 @@
 # Tempus Fugit
 
 [![pipeline status][pipeline-badge]][pipelines]
+[![coverage][coverage-badge]][coverage]
 [![licence][licence-badge]](#licence)
 
 [![A hero banner over a pocket watch photograph, with a running millisecond counter](.github/screenshot.jpg)](https://tempus-fugit.ryankes.eu/)
@@ -94,4 +95,6 @@ read-only mirror exists elsewhere, but it's private and nothing points at it.
 
 [pipeline-badge]: https://github.com/alrayyes/tempus-fugit/actions/workflows/ci.yml/badge.svg
 [pipelines]: https://github.com/alrayyes/tempus-fugit/actions
+[coverage-badge]: https://codecov.io/gh/alrayyes/tempus-fugit/graph/badge.svg
+[coverage]: https://codecov.io/gh/alrayyes/tempus-fugit
 [licence-badge]: https://img.shields.io/badge/licence-GPL--3.0--or--later-blue
