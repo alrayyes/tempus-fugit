@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/alrayyes/tempus-fugit/compare/v1.1.0...v1.2.0) (2026-08-22)
+
+
+### Features
+
+* add Playwright journey tests with axe-core accessibility scans ([#20](https://github.com/alrayyes/tempus-fugit/issues/20)) ([4eb33f6](https://github.com/alrayyes/tempus-fugit/commit/4eb33f6df909de5550cfc44e7f629ec6d7b847c0))
+
 # [1.1.0](https://github.com/alrayyes/tempus-fugit/compare/v1.0.0...v1.1.0) (2026-08-22)
 
 
