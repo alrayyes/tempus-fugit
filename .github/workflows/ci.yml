@@ -225,9 +225,11 @@ jobs:
           retention-days: 7
 
   # Cuts the release: works out the version from the commits, writes CHANGELOG.md, commits
-  # it, tags it, and puts the notes on the Releases page. GitHub's automatic per-job token
-  # authenticates and pushes on its own once the job has contents: write - unlike Forgejo,
-  # there's no PAT to provision and no remote URL to rewrite.
+  # it, tags it, and puts the notes on the Releases page. GITHUB_TOKEN still authenticates
+  # the API calls (creating the GitHub Release, etc.) - only the @semantic-release/git push
+  # needs RELEASE_TOKEN, because protect-master's ruleset can bypass a real user but not a
+  # GITHUB_TOKEN-authenticated push: GitHub's own "Integration" bypass actor type requires
+  # the app be installed through an org, which a personal account has no way to do.
   release:
     needs:
       - secrets
@@ -258,6 +260,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
       # The container runs as a different UID than whatever owns the mounted workspace, so
       # git's ownership check refuses it - not with the usual "dubious ownership" message,
       # but as semantic-release's own wrapped "Not running from a git repository", which is

@@ -73,10 +73,12 @@ It writes `CHANGELOG.md`, bumps `version` in `package.json`, commits both as
 The `[skip ci]` matters: without it that commit starts a pipeline that has nothing to
 release, and the tag push starts one of its own that does.
 
-Releasing needs no repository secret either. `@semantic-release/github` publishes with
-the same automatic `GITHUB_TOKEN`, scoped to `contents: write` on the `release` job; the
-same token pushes the changelog commit, since `actions/checkout` leaves it wired up as a
-credential helper.
+`@semantic-release/github` publishes with the automatic `GITHUB_TOKEN`, scoped to
+`contents: write` on the `release` job. Pushing the changelog commit needs a real repo
+secret, though: `master` is protected by a ruleset requiring a pull request and passing
+checks, and GitHub has no way to add the built-in Actions token as a bypass actor on a
+personal (non-organization) account. `RELEASE_TOKEN` is a fine-grained PAT, scoped to
+this repo's `contents: read and write` only, whose owner is on the ruleset's bypass list.
 
 **Tags here are `v`-prefixed**, consistently, 50 out of 50, so `tagFormat` is
 `v${version}` in `.releaserc.json`. That happens to be semantic-release's default, and
