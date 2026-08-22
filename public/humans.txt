@@ -1,0 +1,8 @@
+/* SITE */
+
+    Last update: 2026/08/22
+    Language: English
+    Doctype: HTML5
+    Standards: HTML5, CSS3
+    Components: Astro, Tailwind CSS
+    Software: Bun, Docker, Caddy

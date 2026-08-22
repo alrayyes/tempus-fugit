@@ -206,6 +206,22 @@ to_absolute() {
 	[[ "$output" == *"Disallow: /"* ]]
 }
 
+# humanstxt.org's /* TEAM */ section names whoever built the site - this is a
+# single-person hobby project, not a studio crediting a client, so only the
+# /* SITE */ section applies.
+@test "humans.txt carries the site section but not the team" {
+	run request -sf /humans.txt
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"/* SITE */"* ]]
+	[[ "$output" != *"/* TEAM */"* ]]
+	[[ "$output" != *"/* THANKS */"* ]]
+}
+
+@test "the page points at humans.txt" {
+	run request -sf /
+	[[ "$output" == *'<link type="text/plain" rel="author" href="/humans.txt">'* ]]
+}
+
 @test "html is compressed" {
 	run request -s -I -H 'Accept-Encoding: gzip, zstd' /
 	[[ "$output" == *"content-encoding:"* || "$output" == *"Content-Encoding:"* ]]
