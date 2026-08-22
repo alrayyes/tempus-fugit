@@ -1,0 +1,18 @@
+{
+	// Cloudflare's own Workers Builds integration (Settings > Build in the
+	// dashboard) connects straight to this repo and builds on every push and
+	// PR - it isn't wired through .github/workflows/ci.yml at all. Without
+	// this file, `wrangler deploy` has nothing to deploy and fails outright.
+	// This exists for PR preview URLs only: production stays the Caddy image
+	// in ci.yml's `image` job, shipped to the VPS - see README.md.
+	"name": "tempus-fugit",
+	"compatibility_date": "2026-08-22",
+	// Matches astro.config.mjs's outDir; kept in sync with it, not with
+	// Astro's default `dist/`.
+	"assets": {
+		"directory": "./_site",
+		// Caddy rewrites an unmatched path to /404.html in production; this is
+		// the same behavior for the preview deploys.
+		"not_found_handling": "404-page"
+	}
+}
