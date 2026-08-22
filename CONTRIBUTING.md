@@ -52,15 +52,37 @@ bun run test:lighthouse
 ```
 
 It audits the built HTML rather than the running container, because Lighthouse's
-categories are about the document — contrast, labels, deprecated APIs — and the
-header-level things it would otherwise grade are covered properly by the smoke tests
-against real Caddy. Best practices, accessibility and performance are all hard gates at
-0.9, and all three currently sit at 0.99 or above. Performance was a warning at 0.76 until
-the images came down — see the note on page weight below.
+categories are about the document — labels, deprecated APIs — and the header-level things
+it would otherwise grade are covered properly by the smoke tests against real Caddy. Best
+practices and performance are hard gates at 0.9, and both currently sit at 0.99 or above.
+Performance was a warning at 0.76 until the images came down — see the note on page
+weight below. Accessibility is turned off here; `test:e2e` below is the real gate for it.
 
 You need Chromium locally (`CHROME_PATH` if it is somewhere unusual). The `--no-sandbox`
 flag in `lighthouserc.json` is there because Chrome's sandbox needs privileges no CI
 container should have.
+
+There is an accessibility gate too:
+
+```shell
+bun run test:e2e
+```
+
+[Playwright](https://playwright.dev/) journey tests, one per page, with an
+[axe-core](https://github.com/dequelabs/axe-core) scan against WCAG 2.1 AA folded into
+each — not a separate a11y-only suite. `rules/a11y.md` (Ryan's global config, not in this
+repo) is why: a scan that only reports is a scan nobody acts on, and a violation fails the
+test outright, same as a wrong title or a missing timer would.
+
+`scripts/e2e.sh` starts and stops the preview server around the suite rather than letting
+Playwright's own `webServer` option do it — `astro preview` daemonizes itself as of
+Astro 7 instead of blocking in the foreground, which is what that option expects of the
+command it runs.
+
+You need Chromium here too — `bunx playwright install --with-deps chromium` once after
+cloning. `--with-deps` needs `apt-get`; drop it and install the OS packages Playwright
+lists yourself on anything that is not Debian or Ubuntu, this machine included, since
+Playwright's own browsers are glibc-linked and will not launch otherwise.
 
 There is a coverage report too:
 
