@@ -56,6 +56,11 @@ The page supports analytics — [Matomo](https://matomo.org/) and
 variables at build time. A fork or a local checkout builds with them unset and
 ships with no tracking; see [`.env.example`](.env.example).
 
+Pull requests also get a scratch preview URL from Cloudflare's own Workers Builds
+integration, connected straight to this repo rather than run through `ci.yml`.
+[`wrangler.jsonc`](wrangler.jsonc) only tells it where the built site lives; it has no
+bearing on the GHCR image or what the VPS actually serves.
+
 ## Releasing
 
 Merging to `master` cuts the release. [semantic-release](https://semantic-release.gitbook.io/)
