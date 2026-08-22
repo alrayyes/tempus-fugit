@@ -11,6 +11,10 @@ _site
 # lighthouse ci reports
 .lighthouseci
 
+# playwright
+test-results
+playwright-report
+
 # kcov output and its scratch bats tempdir - see scripts/coverage.sh
 coverage
 .bats-tmp
