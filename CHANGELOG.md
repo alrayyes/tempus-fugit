@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/alrayyes/tempus-fugit/compare/v1.0.0...v1.1.0) (2026-08-22)
+
+
+### Bug Fixes
+
+* **ci:** push the release commit with a bypass-listed PAT, not GITHUB_TOKEN ([#19](https://github.com/alrayyes/tempus-fugit/issues/19)) ([7d59a0a](https://github.com/alrayyes/tempus-fugit/commit/7d59a0a221b49e7d3c7728c6e89937acfa204867)), closes [#18](https://github.com/alrayyes/tempus-fugit/issues/18)
+
+
+### Features
+
+* add humans.txt ([#18](https://github.com/alrayyes/tempus-fugit/issues/18)) ([6cc5537](https://github.com/alrayyes/tempus-fugit/commit/6cc553786fdd26baba1413cfc788d4b461307b17))
+
 # 1.0.0 (2026-08-16)
 
 
