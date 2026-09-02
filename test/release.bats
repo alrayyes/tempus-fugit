@@ -69,30 +69,51 @@ REPO_ROOT="${BATS_TEST_DIRNAME}/.."
 
 @test "the release job never pushes directly to master" {
 	# The whole reason this isn't semantic-release: protect-master's ruleset
-	# only bypasses Ryan's own user account, never GITHUB_TOKEN. A `git push`
-	# reappearing in this job is the release breaking the same way again.
+	# only bypasses Ryan's own user account, never a workflow token. A
+	# `git push` reappearing in this job is the release breaking the same
+	# way again. RELEASE_TOKEN itself is expected here now (see below) --
+	# release-please-action uses it to open a pull request via the API, not
+	# to push directly, which is a different thing from the push this test
+	# actually guards against.
 	local job
 	job="$(awk '/^  release:/ {found=1} found && /^  [a-z]+:/ && !/^  release:/ {exit} found' \
 		"$REPO_ROOT/.github/workflows/ci.yml")"
 
-	[[ "$job" != *"RELEASE_TOKEN"* ]]
 	[[ "$job" != *"git push"* ]]
+}
+
+@test "release-please authenticates as a real identity, not GITHUB_TOKEN" {
+	# A release pull request authored by GITHUB_TOKEN sits at
+	# action_required with zero jobs run -- GitHub's fork-PR-workflow
+	# approval gate treats a token-authored PR like an outside
+	# contributor's, even on the repo's own branch. Confirmed live on #38.
+	local job
+	job="$(awk '/^  release:/ {found=1} found && /^  [a-z]+:/ && !/^  release:/ {exit} found' \
+		"$REPO_ROOT/.github/workflows/ci.yml")"
+
+	[[ "$job" == *"RELEASE_TOKEN"* ]]
 }
 
 @test "the release pull request auto-merges itself" {
 	[ -f "$REPO_ROOT/.github/workflows/release-auto-merge.yml" ]
 	run grep -F 'gh pr merge --auto --squash' "$REPO_ROOT/.github/workflows/release-auto-merge.yml"
 	[ "$status" -eq 0 ]
+	# Same real-identity requirement as the release job itself: a
+	# GITHUB_TOKEN-performed merge suppresses the push event that fires
+	# the release job's own on:push trigger for the next cycle.
+	run grep -F 'RELEASE_TOKEN' "$REPO_ROOT/.github/workflows/release-auto-merge.yml"
+	[ "$status" -eq 0 ]
 }
 
-@test "the auto-merge title match agrees with the configured PR title pattern" {
-	# Both sides of this match are supposed to be decided in release-please-config.json
-	# alone - if the pattern there ever changes, this catches the workflow's own
-	# startsWith check silently going stale instead of ever matching again.
-	run grep -F 'chore(release):' "$REPO_ROOT/release-please-config.json"
+@test "the auto-merge gate matches release-please's own label, not a title pattern" {
+	# release-please labels its own pull request "autorelease: pending" --
+	# checking that label instead of a title string means there's no second
+	# place (release-please-config.json's pull-request-title-pattern) that
+	# has to be kept in sync with this workflow by hand.
+	run grep -F 'autorelease: pending' "$REPO_ROOT/.github/workflows/release-auto-merge.yml"
 	[ "$status" -eq 0 ]
-	run grep -F 'chore(release):' "$REPO_ROOT/.github/workflows/release-auto-merge.yml"
-	[ "$status" -eq 0 ]
+	run grep -F 'pull-request-title-pattern' "$REPO_ROOT/release-please-config.json"
+	[ "$status" -ne 0 ]
 }
 
 @test "the screenshot is committed and only updates on an actual release" {
@@ -117,10 +138,10 @@ REPO_ROOT="${BATS_TEST_DIRNAME}/.."
 }
 
 @test "the release image gets a version tag without a second tag-triggered run" {
-	# A tag release-please creates via the API using GITHUB_TOKEN never starts a
-	# new workflow run - GitHub suppresses that, the same recursion guard that
-	# applies to any push GITHUB_TOKEN makes. RELEASE_TOKEN used to dodge this by
-	# accident, being a real PAT rather than GITHUB_TOKEN; that accident is gone.
+	# A tag release-please creates via the API never starts a new workflow run
+	# of its own - GitHub's recursion guard suppresses that regardless of
+	# which token pushed it. This job runs inline in the same workflow
+	# invocation instead of depending on that trigger firing at all.
 	local job
 	job="$(awk '/^  retag-release-image:/ {found=1} found && /^  [a-z-]+:/ && !/^  retag-release-image:/ {exit} found' \
 		"$REPO_ROOT/.github/workflows/ci.yml")"
