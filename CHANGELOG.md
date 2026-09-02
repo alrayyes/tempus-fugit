@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.3.1](https://github.com/alrayyes/tempus-fugit/compare/v1.3.0...v1.3.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ci:** install gh in the screenshot job's container ([#44](https://github.com/alrayyes/tempus-fugit/issues/44)) ([78b9b09](https://github.com/alrayyes/tempus-fugit/commit/78b9b09beef163cc612d8d15e93b9615f5aef56a))
+
 ## [1.3.0](https://github.com/alrayyes/tempus-fugit/compare/v1.2.0...v1.3.0) (2026-09-02)
 
 
