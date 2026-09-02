@@ -127,6 +127,19 @@ REPO_ROOT="${BATS_TEST_DIRNAME}/.."
 	[[ "$job" == *"needs.release.outputs.release_created == 'true'"* ]]
 }
 
+@test "the screenshot job also authenticates as a real identity, not GITHUB_TOKEN" {
+	# Same wall as the release job (see #38): a pull request authored by
+	# GITHUB_TOKEN sits at action_required with zero checks run. Confirmed
+	# live on this job's own first real run (#46), one release cycle after
+	# the release job's own fix exposed it.
+	local job
+	job="$(awk '/^  screenshot:/ {found=1} found && /^  [a-z]+:/ && !/^  screenshot:/ {exit} found' \
+		"$REPO_ROOT/.github/workflows/ci.yml")"
+
+	[[ "$job" == *"token: \${{ secrets.RELEASE_TOKEN }}"* ]]
+	[[ "$job" == *"GH_TOKEN: \${{ secrets.RELEASE_TOKEN }}"* ]]
+}
+
 @test "the screenshot job's container actually has gh installed" {
 	# oven/bun's alpine image carries neither gh nor a git config identity by
 	# default - only exercised for real once a release actually lands, which

@@ -330,7 +330,14 @@ jobs:
       pull-requests: write
     steps:
       - run: apk add --no-cache ca-certificates git chromium curl github-cli
+      # RELEASE_TOKEN, not the default GITHUB_TOKEN: a pull request authored by
+      # GITHUB_TOKEN sits at action_required with zero checks run, same wall the
+      # release job hit (see the release job's own comment / #38). Confirmed live
+      # on this job's own first real PR (#46) once the release job's fix exposed
+      # this one behind it.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: bun install --frozen-lockfile
       - run: bun run build
@@ -349,7 +356,8 @@ jobs:
           kill "$PREVIEW_PID"
       - name: Open and auto-merge a PR if the screenshot changed
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Same real-identity requirement as checkout above.
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           # A plain `git push` here fires the pre-push hook from inside this job, same
           # trap the old release job hit - this image has no docker for the hadolint hook
           # step to reach.
