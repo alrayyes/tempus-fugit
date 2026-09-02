@@ -82,8 +82,8 @@ never `GITHUB_TOKEN`'s `github-actions[bot]` identity, on this or any personal
 (non-organization) account. A tool that pushes the version bump directly needs a PAT
 authenticating as that one bypassed user; a tool that proposes it as a pull request
 needs nothing but `GITHUB_TOKEN`, because merging a PR isn't a direct push and this
-ruleset already requires zero approving reviews. That's the whole reason this isn't
-semantic-release anymore — the old setup needed a fine-grained PAT that had to be
+ruleset already requires zero approving reviews. That's the whole reason this is no
+longer semantic-release — the old setup needed a fine-grained PAT that had to be
 rotated by hand and periodically failed silently until someone noticed (#36).
 
 **Tags here are `v`-prefixed**, consistently, 50 out of 50 from before this migration,
