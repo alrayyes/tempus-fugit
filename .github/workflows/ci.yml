@@ -351,6 +351,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
@@ -376,6 +378,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push
+        id: push
         run: |
           set -eu
           image="ghcr.io/${{ github.repository }}"
@@ -392,6 +395,19 @@ jobs:
 
           # placeholder/compose.yaml in vps-docker pins by tag *and* digest, so a deploy
           # needs this line. Printing it here saves pulling the image to find out what was
-          # just pushed.
+          # just pushed. attest-build-provenance below needs the bare digest too.
+          repo_digest=$(docker inspect --format '{{index .RepoDigests 0}}' "${image}:${slug}")
           echo "Pinned form for vps-docker:"
-          docker inspect --format '{{index .RepoDigests 0}}' "${image}:${slug}"
+          echo "$repo_digest"
+          echo "digest=${repo_digest#*@}" >> "$GITHUB_OUTPUT"
+
+      # SLSA Build L2 provenance, per releases.md's "Build provenance and SBOMs" section -
+      # adopt unconditionally on every GitHub repo, no goreleaser/cosign required. Attests
+      # this exact digest was built by this workflow run, then attaches the attestation to
+      # the image in GHCR (push-to-registry) so anyone pulling it can verify without a
+      # separate lookup.
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ghcr.io/${{ github.repository }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
