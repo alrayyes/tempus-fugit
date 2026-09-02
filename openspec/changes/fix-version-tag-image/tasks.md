@@ -6,5 +6,7 @@
 
 ## 2. Verification
 
-- [ ] 2.1 Confirm a real release actually produces a
+- [x] 2.1 Confirm a real release actually produces a
       `ghcr.io/alrayyes/tempus-fugit:vX.Y.Z` tag, not just `:latest`.
+      Confirmed on v1.3.0, v1.3.1 and v1.3.2 — `retag-release-image`
+      succeeded on all three.

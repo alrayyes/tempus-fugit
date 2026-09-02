@@ -69,22 +69,34 @@ the last tag and decides: `feat:` takes the minor, `fix:` the patch, a
 `BREAKING CHANGE:` footer the major, and a branch of only `chore:` and `docs:` proposes
 nothing. Nobody picks a version.
 
-It opens or updates a `chore(release): «version»` pull request carrying the
+It opens or updates a `chore(master): release «version»` pull request carrying the
 `CHANGELOG.md` entry and the `package.json` version bump.
-[`release-auto-merge.yml`](.github/workflows/release-auto-merge.yml) arms
-`gh pr merge --auto --squash` on that PR itself, so it merges on its own once checks
-pass, no manual approval. Merging is what actually cuts the tag and puts the notes on
-the Releases page — release-please does that through the API, never a `git push`.
+[`release-auto-merge.yml`](.github/workflows/release-auto-merge.yml) matches the
+`autorelease: pending` label release-please applies to its own pull request and arms
+`gh pr merge --auto --squash` on it, so it merges on its own once checks pass, no
+manual approval. Merging is what actually cuts the tag and puts the notes on the
+Releases page — release-please does that through the API, never a `git push`.
 
-That's deliberate, not incidental: `master` is protected by a ruleset requiring a pull
-request and passing checks, and its bypass list holds only Ryan's own user account —
-never `GITHUB_TOKEN`'s `github-actions[bot]` identity, on this or any personal
-(non-organization) account. A tool that pushes the version bump directly needs a PAT
-authenticating as that one bypassed user; a tool that proposes it as a pull request
-needs nothing but `GITHUB_TOKEN`, because merging a PR isn't a direct push and this
-ruleset already requires zero approving reviews. That's the whole reason this is no
-longer semantic-release — the old setup needed a fine-grained PAT that had to be
-rotated by hand and periodically failed silently until someone noticed (#36).
+**Both steps need `RELEASE_TOKEN`, a real fine-grained PAT — not the automatic
+`GITHUB_TOKEN`.** That wasn't the original plan; it's what verification found on this
+repo's first real release cycle. Two separate GitHub protections, not one:
+
+- A pull request authored by `GITHUB_TOKEN` sits at `action_required` with zero checks
+  run, the same wall a fork PR hits, even though this PR comes from a branch on this
+  repo. release-please-action's own PR-opening step needs `RELEASE_TOKEN`'s identity to
+  avoid it (confirmed live on #38).
+- A `GITHUB_TOKEN`-performed merge also suppresses the push event that would otherwise
+  fire this workflow's own trigger for the merge commit — so the merge step itself
+  needs `RELEASE_TOKEN` too, or nothing reacts to a release landing.
+
+Neither is about `master`'s branch ruleset (bypass lists, review counts) — merging a
+pull request was never a direct push and never needed a bypass. `RELEASE_TOKEN` isn't
+going away: `alrayyes/deploy-ssh` hits the identical requirement, so this is a real
+GitHub platform behaviour, not something wrong with this repo's own setup. What actually changed
+from the old semantic-release setup: the PAT authenticates two `gh`/API calls instead
+of a raw `git push`, and nothing here breaks when it needs periodic rotation the way a
+broken checkout used to (#36) — a bad token just leaves the next release pull request
+unopened instead of failing a required check.
 
 **Tags here are `v`-prefixed**, consistently, 50 out of 50 from before this migration,
 so `include-component-in-tag` is `false` in `release-please-config.json` — left on,
