@@ -92,7 +92,7 @@ repo's first real release cycle. Two separate GitHub protections, not one:
 Neither is about `master`'s branch ruleset (bypass lists, review counts) — merging a
 pull request was never a direct push and never needed a bypass. `RELEASE_TOKEN` isn't
 going away: `alrayyes/deploy-ssh` hits the identical requirement, so this is a real
-GitHub platform behavior, not something wrong with this repo's own setup. What actually changed
+GitHub platform behaviour, not something wrong with this repo's own setup. What actually changed
 from the old semantic-release setup: the PAT authenticates two `gh`/API calls instead
 of a raw `git push`, and nothing here breaks when it needs periodic rotation the way a
 broken checkout used to (#36) — a bad token just leaves the next release pull request
