@@ -300,8 +300,17 @@ jobs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
+      # RELEASE_TOKEN, not the default GITHUB_TOKEN: a release PR authored by
+      # GITHUB_TOKEN sits at "action_required" with zero jobs run, needing a
+      # manual click before any check (including this repo's own
+      # release-auto-merge) will even start -- confirmed live on this repo's
+      # first release-please PR (#38) after the migrate-release-please
+      # cutover. deploy-ssh, gwttr and every scaffold repo hit the same wall
+      # and fixed it the same way.
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
 
   # Regenerates .github/screenshot.jpg once a release actually lands, rather than on every
   # push to master - the old cadence was never a stated requirement, just an artifact of
@@ -437,10 +446,10 @@ jobs:
   # Adds the version tag (ghcr.io/…:v1.3.0) to the image `image` already built and pushed
   # above, once release-please-action has actually cut that release on this same run.
   # Deliberately not a separate tag-triggered workflow: a tag release-please creates via
-  # the GitHub API using GITHUB_TOKEN never starts a new workflow run - GitHub's own
-  # recursion guard suppresses that, the way it suppresses any push GITHUB_TOKEN makes.
-  # RELEASE_TOKEN used to sidestep this by accident, being a real PAT rather than
-  # GITHUB_TOKEN, and that's gone now (see #36 / migrate-release-please). `imagetools
+  # the GitHub API never starts a new workflow run of its own - GitHub's own recursion
+  # guard suppresses that regardless of which token pushed it. This job runs inline in
+  # the same workflow invocation instead, so it never depends on that trigger firing.
+  # `imagetools
   # create` copies the manifest under the new tag without rebuilding or even pulling it.
   retag-release-image:
     needs: [release, image]

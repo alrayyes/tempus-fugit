@@ -1,12 +1,11 @@
-# release-please opens or updates a "chore(release): x.y.z" pull request rather than
-# pushing a version bump directly - protect-master's ruleset only bypasses Ryan's own
-# user account, never GITHUB_TOKEN's github-actions[bot] identity, so nothing but a
-# pull request merge can land a release here. Merging needs no bypass: the ruleset
-# already requires zero approving reviews, so this just asks GitHub to auto-merge once
-# the same checks every other pull request waits for pass, mirroring
-# dependabot-auto-merge.yml's actor-gated pattern with a title match instead - a fresh
-# GITHUB_TOKEN run on every push to the PR, not a one-shot fired from the job that
-# opened it, so it keeps re-arming itself if a check was still pending the first time.
+# release-please has no built-in auto-merge either — same gap as
+# Dependabot, same fix: gate on the label release-please itself applies,
+# wait for the same checks every other pull request waits for, then arm
+# auto-merge the same way a human would from the UI.
+#
+# pull_request, not pull_request_target: release-please's pull request
+# comes from a branch on this repo, never a fork, so there's no untrusted
+# checkout to guard against.
 name: release-auto-merge
 
 on:
@@ -19,14 +18,20 @@ permissions:
 
 jobs:
   auto-merge:
-    # Matches release-please-config.json's pull-request-title-pattern, set explicitly
-    # there rather than left to release-please's own default so both sides of this
-    # match are decided in the one place.
-    if: startsWith(github.event.pull_request.title, 'chore(release):')
+    # release-please labels its own pull request "autorelease: pending"
+    # and re-labels it "autorelease: tagged" once merged — checking the
+    # label rather than the title, so this and release-please-config.json
+    # don't need to agree on a title pattern in two places.
+    if: "contains(github.event.pull_request.labels.*.name, 'autorelease: pending')"
     runs-on: ubuntu-latest
     steps:
+      # RELEASE_TOKEN, not the default GITHUB_TOKEN: GitHub suppresses the
+      # push event a GITHUB_TOKEN-performed merge produces (to stop
+      # recursive runs), which would otherwise leave this repo's own
+      # release job's `push` trigger never firing after an auto-merged
+      # release PR lands on master.
       - name: Enable auto-merge
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: gh pr merge --auto --squash "$PR_URL"
