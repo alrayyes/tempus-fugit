@@ -14,7 +14,7 @@ problem.
 
 `openspec/specs/` holds a spec per capability — what the site actually does,
 kept current rather than describing a past plan. A change that alters
-behavior (not a pure refactor, tooling, or docs fix) starts as a proposal
+behaviour (not a pure refactor, tooling, or docs fix) starts as a proposal
 under `openspec/changes/<name>/` with a delta spec, gets implemented, then
 `openspec archive <name>` merges the delta into `openspec/specs/` and moves
 the change under `openspec/changes/archive/`. Claude Code drives this
