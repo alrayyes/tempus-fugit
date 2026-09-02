@@ -168,9 +168,10 @@ extends `markdownlint/style/prettier`, which turns off the 23 rules that would a
 it. `line-length` is deliberately switched back on over the top — that style drops it
 because Prettier reflows prose, which on `preserve` it never does.
 
-**The grammar check does not run in the hooks.** `lint:prose-mechanics` is CI only, and
-that is deliberate: `ltex-cli-plus` is a 320 MB release that ships its own JDK, which is
-more than a commit or a push should wait on. Point your editor at `ltex-ls-plus` and you
+**The grammar check does not run in the hooks.** It's the `grammar` job in
+`ci.yml`, CI only, and that is deliberate: `ltex-cli-plus` is a 320 MB release
+that ships its own JDK, which is more than a commit or a push should wait on.
+Point your editor at `ltex-ls-plus` and you
 get the same engine over LSP, underlining as you type. Reaching CI is meant to be the
 fallback, not the first you hear of it.
 
