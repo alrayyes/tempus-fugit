@@ -115,3 +115,18 @@ REPO_ROOT="${BATS_TEST_DIRNAME}/.."
 	run grep -F 'LEFTHOOK: "0"' "$REPO_ROOT/.github/workflows/ci.yml"
 	[ "$status" -eq 0 ]
 }
+
+@test "the release image gets a version tag without a second tag-triggered run" {
+	# A tag release-please creates via the API using GITHUB_TOKEN never starts a
+	# new workflow run - GitHub suppresses that, the same recursion guard that
+	# applies to any push GITHUB_TOKEN makes. RELEASE_TOKEN used to dodge this by
+	# accident, being a real PAT rather than GITHUB_TOKEN; that accident is gone.
+	local job
+	job="$(awk '/^  retag-release-image:/ {found=1} found && /^  [a-z-]+:/ && !/^  retag-release-image:/ {exit} found' \
+		"$REPO_ROOT/.github/workflows/ci.yml")"
+
+	[ -n "$job" ]
+	[[ "$job" == *"needs: [release, image]"* ]]
+	[[ "$job" == *"needs.release.outputs.release_created == 'true'"* ]]
+	[[ "$job" == *"docker buildx imagetools create"* ]]
+}
