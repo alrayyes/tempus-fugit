@@ -9,10 +9,10 @@ its own disposable preview, without a human running a deploy by hand.
 
 ### Requirement: Production publishes a container image on push to master or a tag
 
-Pushing to `master` or pushing a tag builds the site into a container image
-and publishes it to GHCR (`ghcr.io/alrayyes/tempus-fugit`). A separate,
-private deploy repo pulls that image onto the VPS; this repo's
-responsibility ends at publishing it.
+Pushing to `master` builds the site into a container image and publishes it
+to GHCR (`ghcr.io/alrayyes/tempus-fugit`). A separate, private deploy repo
+pulls that image onto the VPS; this repo's responsibility ends at
+publishing it.
 
 #### Scenario: Push to master
 
@@ -26,10 +26,17 @@ responsibility ends at publishing it.
 
 #### Scenario: Push a version tag
 
-- **WHEN** a push lands on a ref matching `v*`
-- **THEN** the `image` job builds and pushes the container tagged with that
-  ref name
+- **WHEN** `release-please-action` sets `release_created` to `true` on a
+  push-to-master run
+- **THEN** the `retag-release-image` job copies the manifest `image`
+  already pushed as `:latest` on this same run to a tag matching the
+  release's `tag_name`, via `docker buildx imagetools create` rather than
+  rebuilding
 - **AND** it does not move the `latest` tag
+- **AND** this happens within the same workflow run that cut the release,
+  never a second run triggered by the tag itself — a tag created through
+  the GitHub API with `GITHUB_TOKEN` doesn't start a new workflow run, so
+  nothing ever reacts to `on: push: tags: [...]` for it
 
 #### Scenario: Publishing needs no repo secret
 
