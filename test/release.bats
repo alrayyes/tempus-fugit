@@ -127,6 +127,18 @@ REPO_ROOT="${BATS_TEST_DIRNAME}/.."
 	[[ "$job" == *"needs.release.outputs.release_created == 'true'"* ]]
 }
 
+@test "the screenshot job's container actually has gh installed" {
+	# oven/bun's alpine image carries neither gh nor a git config identity by
+	# default - only exercised for real once a release actually lands, which
+	# is exactly why this shipped broken on the first real release (v1.3.0):
+	# the branch pushed fine, then `gh pr create` failed with "gh: not found".
+	local job
+	job="$(awk '/^  screenshot:/ {found=1} found && /^  [a-z]+:/ && !/^  screenshot:/ {exit} found' \
+		"$REPO_ROOT/.github/workflows/ci.yml")"
+
+	[[ "$job" == *"apk add"*"github-cli"* ]]
+}
+
 @test "the screenshot step disables lefthook before it pushes" {
 	# bun install (no --ignore-scripts) runs lefthook's prepare script, so the
 	# hook is live in this checkout by the time the screenshot job pushes its
