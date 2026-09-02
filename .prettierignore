@@ -13,3 +13,8 @@ _site
 # Generated from commit messages. Reformatting someone else's output produces a
 # diff nobody wrote and nobody can review.
 CHANGELOG.md
+
+# `openspec init`/`openspec update`'s own generated skill and command files.
+# Vendored text belongs to nobody, same reasoning as styles/Google below.
+.claude/commands/opsx
+.claude/skills/openspec-*

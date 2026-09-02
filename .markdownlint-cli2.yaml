@@ -12,6 +12,16 @@ ignores:
   # styles/House and the vocabulary with them.
   - styles/Google
   - styles/proselint
+  # `openspec init`/`openspec update`'s own generated skill and command
+  # files - vendored, same reasoning as the Vale packages above. Needs the
+  # trailing /** - unlike .prettierignore, these globs aren't gitignore-style
+  # and a bare directory name doesn't recurse.
+  - .claude/commands/opsx/**
+  - .claude/skills/openspec-*/**
+  # Archived changes keep openspec's own delta-spec shape (## Purpose, no H1
+  # capability heading) - that's `openspec archive`'s template, not ours to
+  # fix, and the merge already produced a compliant copy under specs/.
+  - openspec/changes/archive/**
 
 config:
   # Prettier decides layout here, so the rules that would fight it come off.
