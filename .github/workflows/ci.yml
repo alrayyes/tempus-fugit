@@ -133,6 +133,9 @@ jobs:
             -not -path './_site/*' \
             -not -path './styles/Google/*' \
             -not -path './styles/proselint/*' \
+            -not -path './.claude/commands/opsx/*' \
+            -not -path './.claude/skills/openspec-*/*' \
+            -not -path './openspec/changes/archive/*' \
             -not -name 'CHANGELOG.md' \
             -print0 |
             xargs -0 --no-run-if-empty \

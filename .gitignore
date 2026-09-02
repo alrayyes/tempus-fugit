@@ -23,3 +23,7 @@ coverage
 # vocabulary beside it are ours and stay committed.
 styles/Google
 styles/proselint
+
+# Claude Code's own session lock, not a project or an editor artifact -
+# recreated per session, never one to commit.
+.claude/scheduled_tasks.lock

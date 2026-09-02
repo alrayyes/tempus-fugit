@@ -10,6 +10,19 @@ Work lands through a pull request against `master`; nothing pushes there directl
 a red pipeline after opening a PR should be rare rather than the first you hear of a
 problem.
 
+## Specs
+
+`openspec/specs/` holds a spec per capability — what the site actually does,
+kept current rather than describing a past plan. A change that alters
+behaviour (not a pure refactor, tooling, or docs fix) starts as a proposal
+under `openspec/changes/<name>/` with a delta spec, gets implemented, then
+`openspec archive <name>` merges the delta into `openspec/specs/` and moves
+the change under `openspec/changes/archive/`. Claude Code drives this
+through the `/opsx:propose`, `/opsx:apply` and `/opsx:archive` commands
+`openspec init` set up in `.claude/`; see
+[Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec) for the CLI
+itself.
+
 ## Commit format
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/), enforced by
