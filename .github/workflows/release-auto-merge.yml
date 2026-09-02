@@ -1,0 +1,32 @@
+# release-please opens or updates a "chore(release): x.y.z" pull request rather than
+# pushing a version bump directly - protect-master's ruleset only bypasses Ryan's own
+# user account, never GITHUB_TOKEN's github-actions[bot] identity, so nothing but a
+# pull request merge can land a release here. Merging needs no bypass: the ruleset
+# already requires zero approving reviews, so this just asks GitHub to auto-merge once
+# the same checks every other pull request waits for pass, mirroring
+# dependabot-auto-merge.yml's actor-gated pattern with a title match instead - a fresh
+# GITHUB_TOKEN run on every push to the PR, not a one-shot fired from the job that
+# opened it, so it keeps re-arming itself if a check was still pending the first time.
+name: release-auto-merge
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    # Matches release-please-config.json's pull-request-title-pattern, set explicitly
+    # there rather than left to release-please's own default so both sides of this
+    # match are decided in the one place.
+    if: startsWith(github.event.pull_request.title, 'chore(release):')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --auto --squash "$PR_URL"
