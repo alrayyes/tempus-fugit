@@ -63,28 +63,39 @@ bearing on the GHCR image or what the VPS actually serves.
 
 ## Releasing
 
-Merging to `master` cuts the release. [semantic-release](https://semantic-release.gitbook.io/)
-reads the commits since the last tag and decides: `feat:` takes the minor, `fix:` the
-patch, a `BREAKING CHANGE:` footer the major, and a branch of only `chore:` and `docs:`
-releases nothing and says so. Nobody picks a version.
+Merging to `master` proposes the release as a pull request.
+[release-please](https://github.com/googleapis/release-please) reads the commits since
+the last tag and decides: `feat:` takes the minor, `fix:` the patch, a
+`BREAKING CHANGE:` footer the major, and a branch of only `chore:` and `docs:` proposes
+nothing. Nobody picks a version.
 
-It writes `CHANGELOG.md`, bumps `version` in `package.json`, commits both as
-`chore(release): «version» [skip ci]`, tags it and puts the notes on the Releases page.
-The `[skip ci]` matters: without it that commit starts a pipeline that has nothing to
-release, and the tag push starts one of its own that does.
+It opens or updates a `chore(release): «version»` pull request carrying the
+`CHANGELOG.md` entry and the `package.json` version bump.
+[`release-auto-merge.yml`](.github/workflows/release-auto-merge.yml) arms
+`gh pr merge --auto --squash` on that PR itself, so it merges on its own once checks
+pass, no manual approval. Merging is what actually cuts the tag and puts the notes on
+the Releases page — release-please does that through the API, never a `git push`.
 
-`@semantic-release/github` publishes with the automatic `GITHUB_TOKEN`, scoped to
-`contents: write` on the `release` job. Pushing the changelog commit needs a real repo
-secret, though: `master` is protected by a ruleset requiring a pull request and passing
-checks, and GitHub has no way to add the built-in Actions token as a bypass actor on a
-personal (non-organization) account. `RELEASE_TOKEN` is a fine-grained PAT, scoped to
-this repo's `contents: read and write` only, whose owner is on the ruleset's bypass list.
+That's deliberate, not incidental: `master` is protected by a ruleset requiring a pull
+request and passing checks, and its bypass list holds only Ryan's own user account —
+never `GITHUB_TOKEN`'s `github-actions[bot]` identity, on this or any personal
+(non-organization) account. A tool that pushes the version bump directly needs a PAT
+authenticating as that one bypassed user; a tool that proposes it as a pull request
+needs nothing but `GITHUB_TOKEN`, because merging a PR isn't a direct push and this
+ruleset already requires zero approving reviews. That's the whole reason this isn't
+semantic-release anymore — the old setup needed a fine-grained PAT that had to be
+rotated by hand and periodically failed silently until someone noticed (#36).
 
-**Tags here are `v`-prefixed**, consistently, 50 out of 50, so `tagFormat` is
-`v${version}` in `.releaserc.json`. That happens to be semantic-release's default, and
-it is the line to read before copying this config anywhere: eight of the other
-repositories tag bare, and a config carried across without changing it starts them again
-at 1.0.0. There is a test on it in `test/release.bats`.
+**Tags here are `v`-prefixed**, consistently, 50 out of 50 from before this migration,
+so `include-component-in-tag` is `false` in `release-please-config.json` — left on,
+the next tag would be `tempus-fugit-v«version»` instead, since a package name to prefix
+with already exists. `.release-please-manifest.json` is seeded to the version this repo
+was already at, so numbering continues rather than restarting. There's a test on both in
+`test/release.bats`.
+
+The site screenshot (the banner above) regenerates once a release actually lands, as its
+own small auto-merged pull request from the `screenshot` job — not on every push the way
+it used to.
 
 ## Contributing
 

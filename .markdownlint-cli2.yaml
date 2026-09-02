@@ -18,10 +18,12 @@ ignores:
   # and a bare directory name doesn't recurse.
   - .claude/commands/opsx/**
   - .claude/skills/openspec-*/**
-  # Archived changes keep openspec's own delta-spec shape (## Purpose, no H1
-  # capability heading) - that's `openspec archive`'s template, not ours to
-  # fix, and the merge already produced a compliant copy under specs/.
-  - openspec/changes/archive/**
+  # Every change under openspec/changes/ - open or archived - keeps
+  # openspec's own template shape (## Why, ## Purpose, no H1 heading;
+  # README.md's one-liner can run past 100 chars). That's `openspec new`
+  # and `openspec archive`'s templates, not ours to fix, and a merged
+  # change's delta already produced a compliant copy under specs/.
+  - openspec/changes/**
 
 config:
   # Prettier decides layout here, so the rules that would fight it come off.
