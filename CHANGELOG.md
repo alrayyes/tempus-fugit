@@ -27,6 +27,20 @@
 
 # Changelog
 
+## [1.3.0](https://github.com/alrayyes/tempus-fugit/compare/v1.2.0...v1.3.0) (2026-09-02)
+
+
+### Features
+
+* adopt OpenSpec and backfill specs for shipped capabilities ([#33](https://github.com/alrayyes/tempus-fugit/issues/33)) ([ee4a759](https://github.com/alrayyes/tempus-fugit/commit/ee4a759e6650b83c5b8ffc0c5b33862ba8fe7b96))
+* **ci:** migrate releases from semantic-release to release-please ([#37](https://github.com/alrayyes/tempus-fugit/issues/37)) ([794d711](https://github.com/alrayyes/tempus-fugit/commit/794d7112373d5e56394989ab778b9c774bee2c29))
+
+
+### Bug Fixes
+
+* **ci:** give release-please a real token, not GITHUB_TOKEN ([#41](https://github.com/alrayyes/tempus-fugit/issues/41)) ([4c71c73](https://github.com/alrayyes/tempus-fugit/commit/4c71c73e5df2750cba1bb85a46c67fb5b1da69bf))
+* **ci:** publish the version-tagged GHCR image within the release run ([#39](https://github.com/alrayyes/tempus-fugit/issues/39)) ([9fdb762](https://github.com/alrayyes/tempus-fugit/commit/9fdb762e0cd735dfe3e594af660a4a58295685cd))
+
 ## [3.2.206](https://gitlab.higherlearning.eu/personal/websites/tempus-fugit/compare/v3.2.205...v3.2.206) (2025-11-13)
 
 ## [3.2.205](https://gitlab.higherlearning.eu/personal/websites/tempus-fugit/compare/v3.2.204...v3.2.205) (2025-11-10)
