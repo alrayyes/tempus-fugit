@@ -66,12 +66,20 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: bun install --frozen-lockfile
+      # Retried: bun audit talks to the npm registry directly, and a dropped connection
+      # (ConnectionClosed) fails the job the same way a real advisory would. A genuine
+      # finding fails every attempt the same way, so the retry can't mask one.
       - run: |
-          bun audit \
-            --ignore GHSA-jmr9-qjv8-65gv \
-            --ignore GHSA-52f5-9888-hmc6 \
-            --ignore GHSA-ph9p-34f9-6g65 \
-            --ignore GHSA-w5hq-g745-h8pq
+          for attempt in 1 2 3; do
+            bun audit \
+              --ignore GHSA-jmr9-qjv8-65gv \
+              --ignore GHSA-52f5-9888-hmc6 \
+              --ignore GHSA-ph9p-34f9-6g65 \
+              --ignore GHSA-w5hq-g745-h8pq && exit 0
+            echo "bun audit failed (attempt ${attempt}/3), retrying in 10s..." >&2
+            sleep 10
+          done
+          exit 1
 
   # The other half of `bun run lint`, which is `biome check && astro check`. Its own job
   # rather than a second command in `biome`: a failing type check and a failing lint rule
