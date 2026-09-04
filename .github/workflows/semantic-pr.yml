@@ -12,6 +12,10 @@ on:
 permissions:
   pull-requests: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   title:
     runs-on: ubuntu-latest

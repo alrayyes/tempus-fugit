@@ -15,6 +15,13 @@ on:
 permissions:
   contents: read
 
+# Grouped by PR number on pull_request and by ref on push, so a superseded PR run is
+# cancelled but the release/image/retag-release-image chain on master or a tag never is -
+# cancelling that mid-run would leave a tag pushed with no image behind it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   # Replaces GitLab's Security/Secret-Detection template by way of Forgejo. gitleaks is
   # what the pre-commit hook already runs, so this is the same check at both ends.
