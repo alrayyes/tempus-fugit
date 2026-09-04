@@ -16,6 +16,10 @@ permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   auto-merge:
     # release-please labels its own pull request "autorelease: pending"
