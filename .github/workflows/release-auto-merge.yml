@@ -24,6 +24,7 @@ jobs:
     # don't need to agree on a title pattern in two places.
     if: "contains(github.event.pull_request.labels.*.name, 'autorelease: pending')"
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       # RELEASE_TOKEN, not the default GITHUB_TOKEN: GitHub suppresses the
       # push event a GITHUB_TOKEN-performed merge produces (to stop
