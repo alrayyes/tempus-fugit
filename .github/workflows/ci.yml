@@ -67,11 +67,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: bun install --frozen-lockfile
       # Retried: bun audit talks to the npm registry directly, and a dropped connection
-      # (ConnectionClosed) fails the job the same way a real advisory would. A genuine
-      # finding fails every attempt the same way, so the retry can't mask one.
+      # (ConnectionClosed) fails the job the same way a real advisory would. Each attempt
+      # is itself capped at 60s - a hung connection is a failure to retry on, not
+      # something to sit blocked on until the job's own timeout kills the whole thing. A
+      # genuine finding fails every attempt the same way, so the retry can't mask one.
       - run: |
           for attempt in 1 2 3; do
-            bun audit \
+            timeout 60 bun audit \
               --ignore GHSA-jmr9-qjv8-65gv \
               --ignore GHSA-52f5-9888-hmc6 \
               --ignore GHSA-ph9p-34f9-6g65 \
