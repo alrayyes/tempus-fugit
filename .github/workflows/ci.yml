@@ -135,20 +135,19 @@ jobs:
   # LanguageTool's rule database. Fails the pipeline, unlike the style tier, because
   # mechanics have a right answer. CI only, deliberately: a ~320 MB tarball shipping its
   # own JDK is more than a commit should wait on - the editor runs the same engine over
-  # LSP. Debian rather than alpine: the bundled JDK is glibc-linked and will not start on
-  # musl.
+  # LSP. ghcr.io/alrayyes/ltex-cli-plus builds that tarball into an image once instead of
+  # every consuming repo fetching and unpacking it fresh on every run, and bakes in git
+  # and nodejs too (its own #5) so actions/checkout needs no separate install step.
   grammar:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     container:
-      image: debian:trixie-slim@sha256:3a39a0592364683e6bab97937b72cad5a8fa6dcbbee90edb3bb48c7f8e94f258
-    env:
-      LTEX_VERSION: "18.7.0"
+      image: ghcr.io/alrayyes/ltex-cli-plus:18.7.0@sha256:22452e86a130e528d526b60792926002983fcbf732bff09bd4e843d22816e4ea
+      # ltex-cli-plus is the image's own entrypoint, which leaves no shell for a step to
+      # run in - clearing it gets one back.
+      options: --entrypoint ""
     steps:
-      - run: apt-get update && apt-get install --no-install-recommends -y ca-certificates curl
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - run: curl -fsSL -o /tmp/ltex.tar.gz "https://github.com/ltex-plus/ltex-ls-plus/releases/download/${LTEX_VERSION}/ltex-ls-plus-${LTEX_VERSION}-linux-x64.tar.gz"
-      - run: tar -xzf /tmp/ltex.tar.gz -C /opt
       # ltex-cli-plus exits 3 when it finds something, not 1, so a job testing for a
       # specific code passes a failing document. Letting any non-zero fail is the test
       # that works.
@@ -164,7 +163,7 @@ jobs:
             -not -name 'CHANGELOG.md' \
             -print0 |
             xargs -0 --no-run-if-empty \
-              "/opt/ltex-ls-plus-${LTEX_VERSION}/bin/ltex-cli-plus" \
+              /usr/local/bin/ltex-cli-plus \
               --client-configuration=.ltex.json
 
   # Prose style: house voice, weasel words, corporate speak, and the cliches proselint
