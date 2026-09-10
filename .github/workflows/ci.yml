@@ -53,11 +53,13 @@ jobs:
       - run: bunx biome ci --colors=off
 
   # Pinning stops a version drifting under you; it says nothing about the pinned version
-  # having a known CVE. The four ignored advisories are all transitive deps of @lhci/cli
+  # having a known CVE. The five ignored advisories are all transitive deps of @lhci/cli
   # (extract-zip, tmp, uuid) - a dev-only tool that never ships in the built artifact.
   # `bun audit fix` can't touch any of them: two are pinned by @lhci/cli's own dependency
-  # range and extract-zip has no published fix at all. Revisit via #31 once @lhci/cli
-  # updates its own dependencies.
+  # range and extract-zip has no published fix at all (now two known advisories against
+  # the same unfixed version). Revisit via #31 once @lhci/cli updates its own
+  # dependencies. Everything else findable in this tree - smol-toml, js-yaml, svgo - has
+  # a real fix and is overridden in package.json instead of ignored here.
   audit:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -75,6 +77,7 @@ jobs:
           for attempt in 1 2 3; do
             timeout 60 bun audit \
               --ignore GHSA-jmr9-qjv8-65gv \
+              --ignore GHSA-7pqw-9j4j-h8q3 \
               --ignore GHSA-52f5-9888-hmc6 \
               --ignore GHSA-ph9p-34f9-6g65 \
               --ignore GHSA-w5hq-g745-h8pq && exit 0
@@ -221,6 +224,22 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/cobertura.xml
+
+      # Codecov Test Analytics: per-test failure/flake detail, not just a
+      # coverage delta. Run directly on the host, not through the kcov
+      # container above - no instrumentation needed for a plain junit
+      # report, and mixing kcov's own stdout into bats' formatter output
+      # would corrupt the file.
+      - name: bats (junit)
+        if: ${{ !cancelled() }}
+        run: node_modules/bats/bin/bats --formatter junit test/release.bats > junit.xml
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: junit.xml
+          report_type: test_results
 
   build:
     runs-on: ubuntu-latest
