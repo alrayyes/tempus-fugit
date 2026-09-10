@@ -222,6 +222,22 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/cobertura.xml
 
+      # Codecov Test Analytics: per-test failure/flake detail, not just a
+      # coverage delta. Run directly on the host, not through the kcov
+      # container above - no instrumentation needed for a plain junit
+      # report, and mixing kcov's own stdout into bats' formatter output
+      # would corrupt the file.
+      - name: bats (junit)
+        if: ${{ !cancelled() }}
+        run: node_modules/bats/bin/bats --formatter junit test/release.bats > junit.xml
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: junit.xml
+          report-type: test_results
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
