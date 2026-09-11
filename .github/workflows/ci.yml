@@ -356,8 +356,13 @@ jobs:
       # manual click before any check (including this repo's own
       # release-auto-merge) will even start -- confirmed live on this repo's
       # first release-please PR (#38) after the migrate-release-please
-      # cutover. deploy-ssh, gwttr and every scaffold repo hit the same wall
-      # and fixed it the same way.
+      # cutover, and on movie-planner across three separate PRs (0.7.0,
+      # 0.8.0, 0.8.1), which rules out a one-time "first PR only" gate.
+      # deploy-ssh, gwttr and the scaffold repos are NOT corroborating
+      # evidence despite an earlier version of this comment saying so --
+      # verified 2026-09-11 (dotfiles#483) that none of them has ever had a
+      # release-please PR opened at all yet, so the wall's never actually
+      # been tested there. Full investigation: dotfiles#483.
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
         with:
