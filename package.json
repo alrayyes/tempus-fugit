@@ -35,7 +35,7 @@
 		"@biomejs/biome": "2.5.12",
 		"@commitlint/cli": "21.2.2",
 		"@commitlint/config-conventional": "21.2.2",
-		"@fission-ai/openspec": "1.13.0",
+		"@fission-ai/openspec": "1.13.1",
 		"@lhci/cli": "0.15.1",
 		"@playwright/test": "1.63.0",
 		"@tailwindcss/vite": "4.3.3",
