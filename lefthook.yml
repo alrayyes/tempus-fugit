@@ -9,6 +9,7 @@ pre-push:
   parallel: true
   jobs:
     - run: bun run lint
+    - run: bun run lint:tailwind
     - run: bun run format:check
     - run: bun run lint:md
     # Vale only. LTeX is the other prose tier and it stays in CI: a 320 MB

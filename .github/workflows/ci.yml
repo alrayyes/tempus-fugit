@@ -99,6 +99,20 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bunx astro check
 
+  # @shadcn/lint's Tailwind class rules, run through Oxlint rather than Biome - Biome has
+  # no Tailwind-aware rules and this plugin only ships for ESLint/Oxlint. Own job, same
+  # reasoning as astro above: a warn-level Tailwind finding and a type-check failure are
+  # two different things to see fail.
+  tailwind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    container:
+      image: oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: bun install --frozen-lockfile
+      - run: bun run lint:tailwind
+
   dockerfile:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -330,6 +344,7 @@ jobs:
       - biome
       - audit
       - astro
+      - tailwind
       - dockerfile
       - prettier
       - markdown
