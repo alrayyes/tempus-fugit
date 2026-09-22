@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.4.0](https://github.com/alrayyes/tempus-fugit/compare/v1.3.3...v1.4.0) (2026-09-22)
+
+
+### Features
+
+* lint Tailwind class usage with @shadcn/lint via Oxlint ([#87](https://github.com/alrayyes/tempus-fugit/issues/87)) ([0c8761f](https://github.com/alrayyes/tempus-fugit/commit/0c8761f5b3ba142c1106b471796429fb9b11a3eb))
+
 ## [1.3.3](https://github.com/alrayyes/tempus-fugit/compare/v1.3.2...v1.3.3) (2026-09-04)
 
 
