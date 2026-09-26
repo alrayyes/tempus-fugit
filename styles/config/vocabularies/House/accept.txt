@@ -50,4 +50,3 @@ repo
 rulesets?
 semantic-release
 unoptimised
-vps-docker

@@ -499,17 +499,17 @@ jobs:
           docker tag "${image}:ci" "${image}:${slug}"
           docker push "${image}:${slug}"
 
-          # The default branch also moves `latest`, which is the tag vps-docker pulls.
+          # The default branch also moves `latest`, which is the tag the live deployment pulls.
           if [ "${{ github.ref }}" = "refs/heads/master" ]; then
             docker tag "${image}:ci" "${image}:latest"
             docker push "${image}:latest"
           fi
 
-          # placeholder/compose.yaml in vps-docker pins by tag *and* digest, so a deploy
-          # needs this line. Printing it here saves pulling the image to find out what was
-          # just pushed. attest-build-provenance below needs the bare digest too.
+          # The deploy pins this image by tag *and* digest, so a deploy needs this
+          # line. Printing it here saves pulling the image to find out what was just
+          # pushed. attest-build-provenance below needs the bare digest too.
           repo_digest=$(docker inspect --format '{{index .RepoDigests 0}}' "${image}:${slug}")
-          echo "Pinned form for vps-docker:"
+          echo "Pinned form for the deploy:"
           echo "$repo_digest"
           echo "digest=${repo_digest#*@}" >> "$GITHUB_OUTPUT"
 
