@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.5.0](https://github.com/alrayyes/tempus-fugit/compare/v1.4.0...v1.5.0) (2026-09-26)
+
+
+### Features
+
+* add llms.txt for LLM-facing site discovery ([#91](https://github.com/alrayyes/tempus-fugit/issues/91)) ([0799237](https://github.com/alrayyes/tempus-fugit/commit/079923728d8df993938a2a74e68015c24cabf981)), closes [#90](https://github.com/alrayyes/tempus-fugit/issues/90)
+
 ## [1.4.0](https://github.com/alrayyes/tempus-fugit/compare/v1.3.3...v1.4.0) (2026-09-22)
 
 
