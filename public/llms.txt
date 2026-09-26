@@ -1,0 +1,10 @@
+# Tempus Fugit
+
+> Landing page for the personal VPS at outpost.higherlearning.eu — the page
+> you get when you hit the server without asking for any particular
+> service. A single hero page with a running millisecond counter; there is
+> no other content on this site.
+
+## Pages
+
+- [Tempus Fugit](https://outpost.higherlearning.eu/): the hero page itself, the only real page on the site.
