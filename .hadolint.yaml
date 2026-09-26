@@ -6,4 +6,3 @@ failure-threshold: style
 
 trustedRegistries:
   - docker.io
-  - registry.higherlearning.eu

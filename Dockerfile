@@ -9,8 +9,8 @@ RUN chown -R nobody:nobody /data /config
 
 USER nobody:nobody
 
-# Unprivileged, so above 1024. Traefik is told which port to use by a label in
-# vps-docker rather than guessing.
+# Unprivileged, so above 1024. The reverse proxy in front of this is told which
+# port to use by a label in its own deployment config rather than guessing.
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

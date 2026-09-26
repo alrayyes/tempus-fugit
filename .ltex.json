@@ -50,8 +50,7 @@
 				"musl",
 				"npm",
 				"proselint",
-				"semantic-release",
-				"vps-docker"
+				"semantic-release"
 			]
 		},
 		"disabledRules": {
