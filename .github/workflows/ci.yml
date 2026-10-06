@@ -53,8 +53,9 @@ jobs:
       - run: bunx biome ci --colors=off
 
   # Pinning stops a version drifting under you; it says nothing about the pinned version
-  # having a known CVE. The five ignored advisories are all transitive deps of @lhci/cli
-  # (extract-zip, tmp, uuid) - a dev-only tool that never ships in the built artifact.
+  # having a known CVE. The ignored advisories are transitive deps of dev-only tools that never ship in
+  # the built artifact: @lhci/cli (extract-zip, tmp, uuid) and markdownlint-cli2 (braces,
+  # which has no published fix).
   # `bun audit fix` can't touch any of them: two are pinned by @lhci/cli's own dependency
   # range and extract-zip has no published fix at all (now two known advisories against
   # the same unfixed version). Revisit via #31 once @lhci/cli updates its own
@@ -80,7 +81,8 @@ jobs:
               --ignore GHSA-7pqw-9j4j-h8q3 \
               --ignore GHSA-52f5-9888-hmc6 \
               --ignore GHSA-ph9p-34f9-6g65 \
-              --ignore GHSA-w5hq-g745-h8pq && exit 0
+              --ignore GHSA-w5hq-g745-h8pq \
+              --ignore GHSA-vfj7-8cjw-p6xm && exit 0
             echo "bun audit failed (attempt ${attempt}/3), retrying in 10s..." >&2
             sleep 10
           done
