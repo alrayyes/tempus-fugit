@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.5.1](https://github.com/alrayyes/tempus-fugit/compare/v1.5.0...v1.5.1) (2026-10-06)
+
+
+### Bug Fixes
+
+* **deps:** clear the new devalue and fast-uri advisories ([#109](https://github.com/alrayyes/tempus-fugit/issues/109)) ([9263388](https://github.com/alrayyes/tempus-fugit/commit/926338898b7632ec1d6cab123457057f043d1fce)), closes [#108](https://github.com/alrayyes/tempus-fugit/issues/108)
+
 ## [1.5.0](https://github.com/alrayyes/tempus-fugit/compare/v1.4.0...v1.5.0) (2026-09-26)
 
 
