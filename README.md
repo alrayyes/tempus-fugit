@@ -84,7 +84,7 @@ repo's first real release cycle. Two separate GitHub protections, not one:
 - A pull request authored by `GITHUB_TOKEN` sits at `action_required` with zero checks
   run, the same wall a fork PR hits, even though this PR comes from a branch on this
   repo. release-please-action's own PR-opening step needs `RELEASE_TOKEN`'s identity to
-  avoid it (confirmed live on #38).
+  avoid it (confirmed live on the first release pull request).
 - A `GITHUB_TOKEN`-performed merge also suppresses the push event that would otherwise
   fire this workflow's own trigger for the merge commit — so the merge step itself
   needs `RELEASE_TOKEN` too, or nothing reacts to a release landing.
@@ -95,7 +95,7 @@ going away: `alrayyes/deploy-ssh` hits the identical requirement, so this is a r
 GitHub platform behaviour, not something wrong with this repo's own setup. What actually changed
 from the old semantic-release setup: the PAT authenticates two `gh`/API calls instead
 of a raw `git push`, and nothing here breaks when it needs periodic rotation the way a
-broken checkout used to (#36) — a bad token just leaves the next release pull request
+broken checkout used to — a bad token just leaves the next release pull request
 unopened instead of failing a required check.
 
 **Tags here are `v`-prefixed**, consistently, 50 out of 50 from before this migration,
