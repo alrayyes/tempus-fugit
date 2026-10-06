@@ -128,7 +128,7 @@ page pulls in blows its budget` goes red if a replacement arrives at the old siz
 number there for a deliberate change to the design, never to quieten a red run.
 
 **The icon is a mark now, not the clock photograph.** The old favicon was that photograph
-scaled down, which read as a brown blob in a 16-pixel tab icon — see #22.
+scaled down, which read as a brown blob in a 16-pixel tab icon.
 `public/favicon.svg` is a genuine vector (two hands, a filled disc), and every other icon
 in `public/` is generated from it. The 3760-pixel photograph is still in git history
 rather than the tree, because nothing built needs it.
