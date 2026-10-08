@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.5.3](https://github.com/alrayyes/tempus-fugit/compare/v1.5.2...v1.5.3) (2026-10-08)
+
+
+### Performance Improvements
+
+* assert the Lighthouse 13 insights and inline the stylesheet ([#118](https://github.com/alrayyes/tempus-fugit/issues/118)) ([2a96bd4](https://github.com/alrayyes/tempus-fugit/commit/2a96bd4083320daa5b08b453f51c84fa24a07533))
+
 ## [1.5.2](https://github.com/alrayyes/tempus-fugit/compare/v1.5.1...v1.5.2) (2026-10-08)
 
 
