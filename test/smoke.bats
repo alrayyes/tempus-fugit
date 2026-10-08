@@ -112,15 +112,8 @@ to_absolute() {
 }
 
 @test "the font the page asks for actually gets generated" {
-	local href
-	href="$(request -sf / |
-		grep -oE '<link[^>]+rel="stylesheet"[^>]*>' |
-		grep -oE 'href="[^"]+"' |
-		head -1 | cut -d'"' -f2)"
-
-	[ -n "$href" ]
-
-	run request -sf "$(to_absolute "$href")"
+	# The stylesheet is inlined (astro.config.mjs), so the font rule is in the page.
+	run request -sf /
 	[[ "$output" == *"font-home"* ]]
 	[[ "$output" == *"Roboto"* ]]
 }
@@ -132,18 +125,10 @@ to_absolute() {
 	[[ "$output" == *"Not Found"* ]]
 }
 
-@test "every stylesheet the page links to resolves" {
-	local hrefs href
-	hrefs="$(request -sf / |
-		grep -oE '<link[^>]+rel="stylesheet"[^>]*>' |
-		grep -oE 'href="[^"]+"' |
-		cut -d'"' -f2)"
-
-	[ -n "$hrefs" ]
-
-	for href in $hrefs; do
-		[ "$(status_of "$(to_absolute "$href")")" = "200" ]
-	done
+@test "the page carries its styles inline, with no render-blocking stylesheet" {
+	run request -sf /
+	[[ "$output" == *"<style"* ]]
+	[[ "$output" != *'rel="stylesheet"'* ]]
 }
 
 @test "the background image and webfont resolve" {

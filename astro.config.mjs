@@ -13,6 +13,9 @@ export default defineConfig({
 		// Default is 'directory', which emits 404/index.html. Caddy rewrites to
 		// /404.html, so the pages need to be files.
 		format: "file",
+		// Two pages and one 10 kB stylesheet, so a separate request only delays first
+		// paint. Inlining it removes the render-blocking request (web-performance rule).
+		inlineStylesheets: "always",
 	},
 	vite: {
 		plugins: [tailwindcss()],
