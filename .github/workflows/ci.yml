@@ -424,10 +424,20 @@ jobs:
             curl -fsS http://localhost:4321/ >/dev/null 2>&1 && break
             sleep 1
           done
-          chromium --headless --disable-gpu --no-sandbox --hide-scrollbars \
-            --window-size=1280,800 --screenshot=.github/screenshot.jpg \
-            http://localhost:4321/
+          # Headless chromium has hung here until the job timeout (1.4.0, 1.5.1), so bound
+          # each attempt and retry rather than burning 15 minutes on a stuck process.
+          taken=0
+          for attempt in 1 2 3; do
+            if timeout 60 chromium --headless --disable-gpu --no-sandbox --hide-scrollbars \
+              --window-size=1280,800 --screenshot=.github/screenshot.jpg \
+              http://localhost:4321/; then
+              taken=1
+              break
+            fi
+            echo "chromium attempt $attempt did not finish" >&2
+          done
           kill "$PREVIEW_PID"
+          [ "$taken" = 1 ]
       - name: Open and auto-merge a PR if the screenshot changed
         env:
           # Same real-identity requirement as checkout above.
