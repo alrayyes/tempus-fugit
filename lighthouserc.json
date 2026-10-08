@@ -23,8 +23,12 @@
 					}
 				],
 				"categories:seo": "off",
-				"uses-long-cache-ttl": "off",
-				"is-crawlable": "off"
+				"is-crawlable": "off",
+				"cache-insight": "off",
+				"document-latency-insight": "off",
+				"render-blocking-insight": "warn",
+				"network-dependency-tree-insight": "warn",
+				"unused-javascript": "warn"
 			}
 		},
 		"upload": {
