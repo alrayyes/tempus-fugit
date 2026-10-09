@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.6.1](https://github.com/alrayyes/tempus-fugit/compare/v1.6.0...v1.6.1) (2026-10-09)
+
+
+### Performance Improvements
+
+* revalidate html instead of leaving it uncached ([#127](https://github.com/alrayyes/tempus-fugit/issues/127)) ([3f054bf](https://github.com/alrayyes/tempus-fugit/commit/3f054bfeb4fefacb15405b55fb31350f44be2220)), closes [#117](https://github.com/alrayyes/tempus-fugit/issues/117)
+
 ## [1.6.0](https://github.com/alrayyes/tempus-fugit/compare/v1.5.3...v1.6.0) (2026-10-09)
 
 
