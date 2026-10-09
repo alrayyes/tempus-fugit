@@ -34,9 +34,11 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/), enf
 `lefthook` (`lefthook.yml`) runs three:
 
 - **`commit-msg`** — lints the commit message.
-- **`pre-commit`** — auto-fixes what it can (`lint:fix`, Prettier, markdownlint), then
-  builds the site and, if `Dockerfile` is staged, lints and builds the image.
-- **`pre-push`** — the full read-only set: `lint`, `format:check`, `lint:md`,
+- **`pre-commit`** — judges only what the commit contains: every job is handed the
+  staged files, so a half-finished file elsewhere can't fail or be rewritten by a commit.
+  It auto-fixes what it can (`lint:fix`, Prettier, markdownlint), stages the result again, and
+  lints a staged `Dockerfile` from the index. It never builds the site or the image.
+- **`pre-push`** — the full read-only set, over the whole tree: `lint`, `format:check`, `lint:md`,
   `lint:prose`, `hadolint`, and the smoke tests against a fresh build.
 
 `bun install` wires these up automatically (`prepare` calls `lefthook install` outside
