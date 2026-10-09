@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.6.0](https://github.com/alrayyes/tempus-fugit/compare/v1.5.3...v1.6.0) (2026-10-09)
+
+
+### Features
+
+* **ci:** publish test, coverage and Lighthouse reports to Pages ([#122](https://github.com/alrayyes/tempus-fugit/issues/122)) ([1418811](https://github.com/alrayyes/tempus-fugit/commit/1418811214182142f715fe9013694d823912c6f0))
+
 ## [1.5.3](https://github.com/alrayyes/tempus-fugit/compare/v1.5.2...v1.5.3) (2026-10-08)
 
 
