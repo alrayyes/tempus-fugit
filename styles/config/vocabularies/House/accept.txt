@@ -25,7 +25,7 @@ Vale
 APIs
 [Bb]ats
 bun
-cobertura
+[Cc]obertura
 commitlint
 config
 dev
@@ -37,6 +37,7 @@ glibc
 greps
 hadolint
 hardcoded
+JUnit
 kcov
 lefthook
 lhci

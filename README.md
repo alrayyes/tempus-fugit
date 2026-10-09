@@ -109,6 +109,22 @@ The site screenshot (the banner above) regenerates once a release actually lands
 own small auto-merged pull request from the `screenshot` job — not on every push the way
 it used to.
 
+## Reports
+
+Every push to `master` publishes the pipeline's reports, so you can check the project's
+health without opening a CI run:
+
+- [Reports index](https://apis.ryankes.eu/tempus-fugit/reports/), with the commit and date
+- [Test results](https://apis.ryankes.eu/tempus-fugit/reports/tests/unit.xml) as JUnit XML,
+  one file per runner (`unit.xml`, `smoke.xml`, `e2e.xml`)
+- [Coverage](https://apis.ryankes.eu/tempus-fugit/reports/coverage/) and its
+  [Cobertura file](https://apis.ryankes.eu/tempus-fugit/reports/coverage/coverage.xml). It
+  covers the release tooling under `test/release.bats`, not the Astro site.
+- [Lighthouse](https://apis.ryankes.eu/tempus-fugit/reports/lighthouse/index/report.html), an
+  audit of the built site rather than of the deployed page
+
+`scripts/assemble-reports.sh` builds the tree from the CI artifacts, on pull requests too.
+
 ## Contributing
 
 Testing, linting, hooks and the rest of the tool-by-tool detail live in

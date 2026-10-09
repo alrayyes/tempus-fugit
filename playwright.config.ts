@@ -14,6 +14,14 @@ export default defineConfig({
 	fullyParallel: true,
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 2 : 0,
+	// JUnit and an HTML view are what CI publishes (scripts/assemble-reports.sh).
+	// The JUnit file lives outside playwright-report/, which the HTML reporter
+	// empties before it writes.
+	reporter: [
+		["list"],
+		["junit", { outputFile: "e2e-results/e2e.xml" }],
+		["html", { open: "never" }],
+	],
 	use: {
 		baseURL: "http://localhost:4322",
 	},
