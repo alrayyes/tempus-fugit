@@ -14,6 +14,7 @@ _site
 # playwright
 test-results
 playwright-report
+e2e-results
 
 # kcov output and its scratch bats tempdir - see scripts/coverage.sh
 coverage
@@ -27,3 +28,7 @@ styles/proselint
 # Claude Code's own session lock, not a project or an editor artifact -
 # recreated per session, never one to commit.
 .claude/scheduled_tasks.lock
+
+# bats --report-formatter output and the assembled Pages tree - see ci.yml
+bats-report
+site
