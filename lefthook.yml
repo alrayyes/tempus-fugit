@@ -22,11 +22,15 @@ pre-push:
     - name: smoke
       run: bun run build && bun run test
 
+# Judges only what the commit contains: every job is handed {staged_files}, so a
+# half-finished file elsewhere in the tree can't fail, or be rewritten by, a
+# commit. The site build, the smoke tests and `docker build` don't look at the
+# commit at all; they run in pre-push and CI.
 pre-commit:
   parallel: true
   jobs:
-    - run: bun run lint:fix .
-      glob: "*"
+    - run: bun run lint:fix {staged_files}
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,jsonc,css,astro}"
       stage_fixed: true
     # Sequential, and in this order. Prettier decides the layout and markdownlint
     # then judges what Prettier produced; the other way round has markdownlint
@@ -37,16 +41,15 @@ pre-commit:
           - run: bunx prettier --write {staged_files}
             glob: "*.{md,yml,yaml}"
             stage_fixed: true
-          - run: bun run lint:md:fix
+          - run: bun run lint:md:fix {staged_files}
             glob: "*.md"
             stage_fixed: true
           # Last in the group: Vale reads what Prettier and markdownlint left,
           # and it never writes. Warnings print and pass; only Vale.Terms and
-          # Vale.Spelling stop a commit.
-          - run: bun run lint:prose
-            glob: "*.md"
-    - run: bun run build
-    - run: docker compose run --rm -T hadolint hadolint Dockerfile
-      glob: "Dockerfile"
-    - run: docker build .
+          # Vale.Spelling stop a commit. CI checks these two documents only, so
+          # the hook does too.
+          - run: vale {staged_files}
+            glob: "{README,CONTRIBUTING}.md"
+    # Reads the staged Dockerfile from the index, not the working tree.
+    - run: git show :Dockerfile | docker compose run --rm -T hadolint hadolint -
       glob: "Dockerfile"
