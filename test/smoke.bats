@@ -208,8 +208,11 @@ to_absolute() {
 }
 
 @test "html is compressed" {
-	run request -s -I -H 'Accept-Encoding: gzip, zstd' /
-	[[ "$output" == *"content-encoding:"* || "$output" == *"Content-Encoding:"* ]]
+	run request -s -I -H 'Accept-Encoding: br, gzip' /
+	[[ "${output,,}" == *"content-encoding:"* ]]
+
+	run request -s -I -H 'Accept-Encoding: br, gzip' /404.html
+	[[ "${output,,}" == *"content-encoding:"* ]]
 }
 
 @test "long-lived assets carry an immutable cache header" {
@@ -218,6 +221,16 @@ to_absolute() {
 
 	run request -s -I /fonts/Roboto-Regular-webfont.woff
 	[[ "$output" == *"immutable"* ]]
+}
+
+# An HTML URL cannot be cache-busted, so it revalidates instead of going stale (#117).
+@test "html revalidates rather than pinning visitors to a stale page" {
+	run request -s -I /
+	[[ "${output,,}" == *"cache-control: no-cache"* ]]
+	[[ "${output,,}" == *"etag:"* ]]
+
+	run request -s -I /404.html
+	[[ "${output,,}" == *"cache-control: no-cache"* ]]
 }
 
 @test "responses do not advertise the server" {
