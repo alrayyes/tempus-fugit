@@ -51,6 +51,11 @@ a self-hosted registry, there's no personal-access token to mint or rotate.
 The job prints the pushed digest at the end, which is what `placeholder/compose.yaml`
 pins alongside the tag. Nothing on the VPS moves until that file does.
 
+The [`Caddyfile`](Caddyfile) compresses text responses and sets the cache headers.
+Fingerprinted files, plus the images and fonts, are cached for a year as `immutable`.
+Everything else, HTML included, is `no-cache`, so a visitor checks with the server
+before reusing a copy and never gets a stale page.
+
 The page supports analytics — [Matomo](https://matomo.org/) and
 [Umami](https://umami.is/) — off by default and configured through repository
 variables at build time. A fork or a local checkout builds with them unset and
