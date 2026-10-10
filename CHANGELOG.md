@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.6.2](https://github.com/alrayyes/tempus-fugit/compare/v1.6.1...v1.6.2) (2026-10-10)
+
+
+### Performance Improvements
+
+* preload the web font ([#131](https://github.com/alrayyes/tempus-fugit/issues/131)) ([497c341](https://github.com/alrayyes/tempus-fugit/commit/497c3418f3328feb20b0962c085b58383c0abbeb)), closes [#130](https://github.com/alrayyes/tempus-fugit/issues/130)
+
 ## [1.6.1](https://github.com/alrayyes/tempus-fugit/compare/v1.6.0...v1.6.1) (2026-10-09)
 
 
