@@ -137,6 +137,12 @@ to_absolute() {
 	[ "$(status_of /fonts/Roboto-Regular-webfont.woff)" = "200" ]
 }
 
+# The font is otherwise discovered only after the CSS is parsed, which puts it at the
+# end of a request chain Lighthouse flags. See #130.
+@test "the page preloads its web font" {
+	request -s / | grep -Eq '<link[^>]*rel="preload"[^>]*href="/fonts/Roboto-Regular-webfont.woff"[^>]*crossorigin'
+}
+
 @test "favicons and the manifest are served from the root" {
 	[ "$(status_of /favicon.ico)" = "200" ]
 	[ "$(status_of /favicon-96x96.png)" = "200" ]
