@@ -46,6 +46,14 @@ const matomoNoscriptSrc =
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 
+		<link
+			rel="preload"
+			as="font"
+			type="font/woff"
+			href="/fonts/Roboto-Regular-webfont.woff"
+			crossorigin
+		/>
+
 		<!-- A real vector again as of #22: two clock hands, not the 3.2 MB photograph
 		that #18 removed (that one was a raster base64'd into an <image> tag, so
 		there was nothing to fall back to). Browsers that support SVG favicons use
