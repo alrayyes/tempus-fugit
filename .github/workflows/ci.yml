@@ -258,12 +258,12 @@ jobs:
           report_type: test_results
       # Published by the pages job. Only the master push uploads; a pull request
       # assembles the same files from the artifacts of its own run.
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage
           path: coverage/
           retention-days: 1
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: junit-unit
           path: junit.xml
@@ -297,7 +297,7 @@ jobs:
       - run: bun run build
       - run: mkdir bats-report && bats --report-formatter junit --output bats-report test/
       - run: mv bats-report/report.xml bats-report/smoke.xml
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: junit-smoke
           path: bats-report/smoke.xml
@@ -323,7 +323,7 @@ jobs:
       # Best-effort, and deliberately so. A report that failed to upload must not take a
       # quality gate down with it - the assertions in lighthouserc.json are the gate and
       # they have already run by this point.
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         continue-on-error: true
         with:
@@ -350,12 +350,12 @@ jobs:
       - run: bunx playwright install --with-deps chromium
       - run: bun run build
       - run: bun run test:e2e
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: junit-e2e
           path: e2e-results/e2e.xml
           retention-days: 1
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-report
           path: playwright-report/
