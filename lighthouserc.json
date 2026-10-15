@@ -4,6 +4,7 @@
 			"staticDistDir": "_site",
 			"numberOfRuns": 3,
 			"settings": {
+				"onlyCategories": ["performance", "accessibility", "best-practices"],
 				"chromeFlags": "--no-sandbox --disable-dev-shm-usage"
 			}
 		},
@@ -22,8 +23,6 @@
 						"minScore": 0.9
 					}
 				],
-				"categories:seo": "off",
-				"is-crawlable": "off",
 				"cache-insight": "off",
 				"document-latency-insight": "off",
 				"render-blocking-insight": "warn",

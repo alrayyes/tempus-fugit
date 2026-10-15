@@ -306,6 +306,7 @@ jobs:
   # Audits the built HTML, not the running container. best-practices and performance are
   # hard gates at 0.9. accessibility is turned off here - it's a weighted score that a
   # real violation can survive, and the e2e job below is the actual accessibility gate.
+  # seo isn't run at all: this is an internal service, so it's noindex by design.
   lighthouse:
     needs: [build]
     runs-on: ubuntu-latest
