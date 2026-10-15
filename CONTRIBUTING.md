@@ -71,7 +71,8 @@ categories are about the document — labels, deprecated APIs — and the header
 it would otherwise grade are covered properly by the smoke tests against real Caddy. Best
 practices and performance are hard gates at 0.9, and both currently sit at 0.99 or above.
 Performance was a warning at 0.76 until the images came down — see the note on page
-weight below. Accessibility is turned off here; `test:e2e` below is the real gate for it.
+weight below. Accessibility is turned off here; `test:e2e` below is the real gate for it. SEO
+isn't run at all, because this is an internal service and meant to stay out of search results.
 
 You need Chromium locally (`CHROME_PATH` if it is somewhere unusual). The `--no-sandbox`
 flag in `lighthouserc.json` is there because Chrome's sandbox needs privileges no CI
