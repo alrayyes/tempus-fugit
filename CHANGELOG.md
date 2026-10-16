@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.6.3](https://github.com/alrayyes/tempus-fugit/compare/v1.6.2...v1.6.3) (2026-10-16)
+
+
+### Bug Fixes
+
+* **ci:** re-run release-auto-merge when the label lands ([#144](https://github.com/alrayyes/tempus-fugit/issues/144)) ([702f9f2](https://github.com/alrayyes/tempus-fugit/commit/702f9f268d88041ff123ef1100aaf8c0c3bc2bb0))
+
 ## [1.6.2](https://github.com/alrayyes/tempus-fugit/compare/v1.6.1...v1.6.2) (2026-10-10)
 
 
