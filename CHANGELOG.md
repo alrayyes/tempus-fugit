@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.6.4](https://github.com/alrayyes/tempus-fugit/compare/v1.6.3...v1.6.4) (2026-10-16)
+
+
+### Bug Fixes
+
+* **deps:** override tmp and uuid ([#152](https://github.com/alrayyes/tempus-fugit/issues/152)) ([41f37a0](https://github.com/alrayyes/tempus-fugit/commit/41f37a07913913e82a6bd5465e31e226790ab9ef))
+
 ## [1.6.3](https://github.com/alrayyes/tempus-fugit/compare/v1.6.2...v1.6.3) (2026-10-16)
 
 
