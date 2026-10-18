@@ -39,7 +39,7 @@
 		"@fission-ai/openspec": "1.14.1",
 		"@lhci/cli": "0.15.1",
 		"@playwright/test": "1.64.0",
-		"@shadcn/lint": "0.2.0",
+		"@shadcn/lint": "0.2.1",
 		"@tailwindcss/vite": "4.3.3",
 		"astro": "7.3.7",
 		"bats": "1.13.0",
