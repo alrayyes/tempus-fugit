@@ -100,6 +100,12 @@ cloning. `--with-deps` needs `apt-get`; drop it and install the OS packages Play
 lists yourself on anything that is not Debian or Ubuntu, this machine included, since
 Playwright's own browsers are glibc-linked and will not launch otherwise.
 
+CI does not install anything: the `e2e` job runs in
+[`ghcr.io/alrayyes/ci-playwright`](https://github.com/alrayyes/ci-playwright), which has the
+browsers, git, and the bun runtime baked in. Its tag has to equal the `@playwright/test` version in
+`bun.lock`, exactly. When you bump Playwright, bump the tag and digest in `.github/workflows/ci.yml`
+to match; `test/playwright-image.bats` (run by `bun run test` and in CI) fails until you do.
+
 There is a coverage report too:
 
 ```shell

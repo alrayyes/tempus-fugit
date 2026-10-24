@@ -27,12 +27,12 @@ if [ "$ready" -ne 1 ]; then
 	exit 1
 fi
 
-bunx playwright test
+bun x playwright test
 status=$?
 
 # Whichever mode it ran in this time: kill it directly if it's still attached
 # to $preview_pid, and ask astro's own tracking to stop it in case it detached.
 kill "$preview_pid" 2>/dev/null
-bunx astro preview stop >/dev/null 2>&1
+bun x astro preview stop >/dev/null 2>&1
 
 exit "$status"
