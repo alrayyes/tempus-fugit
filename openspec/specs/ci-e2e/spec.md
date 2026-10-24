@@ -7,19 +7,19 @@ every run, and keeps the image and `@playwright/test` in step.
 
 ## Requirements
 
-### Requirement: The e2e job runs in a digest-pinned Playwright image matching the lockfile
+### Requirement: The e2e job runs in a digest-pinned Playwright image matching the lock file
 
 The `e2e` job runs in `ghcr.io/alrayyes/ci-playwright`, pinned by exact
 version and `sha256` digest, with `--ipc=host`. The image tag equals the
 `@playwright/test` version locked in `bun.lock`. No job downloads a browser.
 
-#### Scenario: Image and lockfile agree
+#### Scenario: Image and lock file agree
 
 - **WHEN** `scripts/test-playwright-image.sh` runs and the tag equals the
   locked `@playwright/test` version
 - **THEN** it exits 0
 
-#### Scenario: Image drifts from the lockfile
+#### Scenario: Image drifts from the lock file
 
 - **WHEN** the tag differs from the version locked in `bun.lock`
 - **THEN** the script exits non-zero and names both versions
@@ -43,4 +43,4 @@ version and `sha256` digest, with `--ipc=host`. The image tag equals the
 
 - **WHEN** `bun run test` runs, in the pre-push hook or the `smoke` CI job
 - **THEN** `test/playwright-image.bats` runs the script against the real
-  workflow and lockfile
+  workflow and lock file
