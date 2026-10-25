@@ -27,6 +27,13 @@
 
 # Changelog
 
+## [1.6.5](https://github.com/alrayyes/tempus-fugit/compare/v1.6.4...v1.6.5) (2026-10-25)
+
+
+### Bug Fixes
+
+* **lint:** leave Markdown formatting to Prettier ([#173](https://github.com/alrayyes/tempus-fugit/issues/173)) ([7e998b0](https://github.com/alrayyes/tempus-fugit/commit/7e998b06d5e0c84be37dd0a6e14352121b77108f)), closes [#172](https://github.com/alrayyes/tempus-fugit/issues/172)
+
 ## [1.6.4](https://github.com/alrayyes/tempus-fugit/compare/v1.6.3...v1.6.4) (2026-10-16)
 
 
