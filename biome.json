@@ -12,7 +12,8 @@
 			"!_site/**/*",
 			"!.astro/**/*",
 			"!.lighthouseci/**/*",
-			"!.claude/settings.local.json"
+			"!.claude/settings.local.json",
+			"!**/*.md"
 		]
 	},
 	"formatter": {
