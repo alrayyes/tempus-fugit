@@ -47,7 +47,7 @@
 		"markdownlint-cli2": "0.24.0",
 		"oxlint": "1.94.0",
 		"playwright-core": "1.65.1",
-		"prettier": "3.9.10",
+		"prettier": "3.10.1",
 		"tailwindcss": "4.3.5",
 		"typescript": "5.9.3"
 	},
