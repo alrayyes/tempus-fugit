@@ -46,7 +46,7 @@ CI).
 
 ## Testing
 
-Build the site first — see "Running it" in README — then:
+Build the site first — see “Running it” in README — then:
 
 ```shell
 bun run test
@@ -127,7 +127,7 @@ coverage against a temp file nobody can look up.
 
 ## Things that will catch you out
 
-**`robots.txt` is `Disallow: /`.** That is deliberate. Do not "fix" it.
+**`robots.txt` is `Disallow: /`.** That is deliberate. Do not “fix” it.
 
 **The images carry a budget, and the smoke tests hold them to it.** A build used to be 6.9
 MB, and 6.8 MB of that was three files: a `favicon.svg` that was really a 3.2 MB JPEG, the
@@ -169,7 +169,7 @@ smoke test for it now.
 **Biome cannot see inside a `.astro` template.** It parses the frontmatter and stops, so
 it reports imports used only in the markup as unused. Those two rules are turned off for
 `.astro` files in `biome.json`, and `astro check` — which does understand the template —
-runs alongside it in `bun run lint`. If you are wondering why a lint error looks obviously
+runs alongside it in `bun run lint`. If you are wondering why a lint error looks plainly
 wrong, that is why.
 
 **There are two formatters, and they do not overlap.** Biome owns everything it can
@@ -207,7 +207,7 @@ glibc-linked and will not start on musl.
 style rather than mechanics. `OXFORD_SPELLING_Z_NOT_S` is off because this prose is
 British and spells it `unoptimised`. `UPPERCASE_SENTENCE_START` is off because a sentence
 continuing out of a fenced code block reads as lowercase to a tool that cannot see the
-block. `PREPOSITION_VERB` is off because "after a deploy" is a noun here and LanguageTool
+block. `PREPOSITION_VERB` is off because “after a deploy” is a noun here and LanguageTool
 would rather it were a deployment. Everything else stays on. Product names go in the
 dictionary, not into a disabled rule.
 
