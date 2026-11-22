@@ -6,6 +6,17 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      # @playwright/test carries its own nested playwright-core, so bumping the pinned
+      # top-level copy alone makes the two Page types disagree and `astro check` fail
+      # (#200). One PR keeps them level. The ci-playwright image tag in ci.yml has to
+      # follow by hand: Dependabot can't see an image named in a workflow, and the
+      # smoke job fails until it matches bun.lock.
+      playwright:
+        patterns:
+          - "@playwright/test"
+          - "playwright-core"
+          - "@axe-core/playwright"
     ignore:
       # TypeScript 7 dropped the programmatic API @astrojs/check needs - astro check
       # fails outright, not a lint nit. Tracked upstream:
